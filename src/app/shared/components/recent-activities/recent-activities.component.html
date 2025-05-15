@@ -1,0 +1,60 @@
+<div class="w-full">
+  <!-- Loading state -->
+  <div *ngIf="loading" class="flex justify-center py-6">
+    <div class="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-primary-600 border-r-transparent"></div>
+  </div>
+
+  <!-- Empty state -->
+  <div *ngIf="!loading && activities.length === 0" class="py-6 text-center text-gray-500 dark:text-gray-400">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto mb-2 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <p>No recent activities to display.</p>
+  </div>
+
+  <!-- Activities list -->
+  <ul *ngIf="!loading && activities.length > 0" class="divide-y divide-gray-200 dark:divide-gray-700">
+    <li *ngFor="let activity of activities.slice(0, limit)" class="py-4">
+      <div class="flex items-start">
+        <!-- Activity icon -->
+        <div [class]="'rounded-full p-2 mr-4 ' + getActivityBgClass(activity.type)"
+             [innerHTML]="getActivityIcon(activity.type)">
+        </div>
+
+        <!-- Activity content -->
+        <div class="flex-1 min-w-0">
+          <div class="flex justify-between">
+            <p class="text-sm font-medium text-gray-900 dark:text-white">
+              {{ activity.message }}
+            </p>
+            <span class="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap ml-2">
+              {{ formatTimeAgo(activity.created_at) }}
+            </span>
+          </div>
+
+          <!-- Campaign info if available and not in specific campaign view -->
+          <p *ngIf="activity.campaign_title && !campaignId" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            <a [routerLink]="['/dashboard/campaigns', activity.campaign_id]" class="hover:underline">
+              {{ activity.campaign_title }}
+            </a>
+          </p>
+
+          <!-- Amount if available -->
+          <p *ngIf="activity.amount" class="mt-1 text-sm font-medium text-gray-800 dark:text-gray-200">
+            {{ formatCurrency(activity.amount) }}
+          </p>
+        </div>
+      </div>
+    </li>
+  </ul>
+
+  <!-- View more button -->
+  <div *ngIf="showViewMore && activities.length > limit" class="mt-4 text-center">
+    <a [routerLink]="getViewMoreLink()" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+      View All Activities
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+      </svg>
+    </a>
+  </div>
+</div>

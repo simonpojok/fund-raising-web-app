@@ -1,0 +1,11 @@
+<div class="flex items-center gap-2">
+  <div [class]="containerClasses">
+    <div
+      [class]="progressBarClasses"
+      [style.width.%]="displayProgress"
+    ></div>
+  </div>
+  <span *ngIf="showPercentage" class="text-sm font-medium text-gray-700 dark:text-gray-300 min-w-12 text-right">
+    {{ displayProgress }}%
+  </span>
+</div>

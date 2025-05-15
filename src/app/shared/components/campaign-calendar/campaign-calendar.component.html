@@ -1,0 +1,95 @@
+<div class="w-full">
+  <!-- Calendar header -->
+  <div class="flex items-center justify-between mb-4">
+    <button type="button"
+            (click)="changeMonth(-1)"
+            class="p-1 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+    </button>
+    <h3 class="text-base font-medium text-gray-900 dark:text-white">
+      {{ getMonthName() }} {{ currentYear }}
+    </h3>
+    <button type="button"
+            (click)="changeMonth(1)"
+            class="p-1 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Calendar grid -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+    <!-- Day names -->
+    <div class="grid grid-cols-7 border-b border-gray-200 dark:border-gray-700">
+      <div *ngFor="let day of daysOfWeek"
+           class="py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400"
+           [class.text-danger]="day === 'Sun' || day === 'Sat'">
+        {{ day }}
+      </div>
+    </div>
+
+    <!-- Calendar dates -->
+    <div class="grid grid-cols-7">
+      <div *ngFor="let day of calendarDays"
+           class="p-1 border border-gray-100 dark:border-gray-700 aspect-square"
+           [class.bg-gray-50]="!day.isCurrentMonth"
+           [class.dark:bg-gray-800]="!day.isCurrentMonth"
+           [class.bg-primary-50]="day.isToday"
+           [class.dark:bg-primary-900]="day.isToday"
+           [class.bg-success-50]="day.isCampaignEndDay"
+           [class.dark:bg-success-900]="day.isCampaignEndDay"
+           [class.bg-primary-50]="day.isCampaignStartDay && !day.isToday"
+           [class.dark:bg-primary-900]="day.isCampaignStartDay && !day.isToday">
+
+        <div class="h-full flex flex-col">
+          <div class="text-center">
+            <span class="text-sm font-medium"
+                  [class.text-gray-900]="day.isCurrentMonth && !day.isToday && !day.isCampaignEndDay && !day.isCampaignStartDay"
+                  [class.dark:text-white]="day.isCurrentMonth && !day.isToday && !day.isCampaignEndDay && !day.isCampaignStartDay"
+                  [class.text-gray-400]="!day.isCurrentMonth"
+                  [class.dark:text-gray-500]="!day.isCurrentMonth"
+                  [class.text-primary-600]="day.isToday"
+                  [class.dark:text-primary-400]="day.isToday"
+                  [class.text-success]="day.isCampaignEndDay"
+                  [class.text-primary-600]="day.isCampaignStartDay && !day.isToday"
+                  [class.dark:text-primary-400]="day.isCampaignStartDay && !day.isToday">
+              {{ day.dayNumber }}
+            </span>
+          </div>
+
+          <!-- Indicators -->
+          <div class="mt-auto flex justify-center">
+            <!-- Today indicator -->
+            <div *ngIf="day.isToday" class="h-1.5 w-1.5 rounded-full bg-primary-600 dark:bg-primary-400 mt-1"></div>
+
+            <!-- Campaign start indicator -->
+            <div *ngIf="day.isCampaignStartDay && !day.isToday"
+                 class="h-1.5 w-1.5 rounded-full bg-primary-600 dark:bg-primary-400 mt-1"></div>
+
+            <!-- Campaign end indicator -->
+            <div *ngIf="day.isCampaignEndDay" class="h-1.5 w-1.5 rounded-full bg-success mt-1"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Calendar legend -->
+  <div class="mt-3 flex flex-wrap items-center justify-center gap-4 text-xs">
+    <div class="flex items-center">
+      <div class="h-3 w-3 rounded-full bg-primary-600 dark:bg-primary-400 mr-1.5"></div>
+      <span class="text-gray-700 dark:text-gray-300">Today</span>
+    </div>
+    <div class="flex items-center">
+      <div class="h-3 w-3 rounded-full bg-primary-600 dark:bg-primary-400 mr-1.5"></div>
+      <span class="text-gray-700 dark:text-gray-300">Start Date</span>
+    </div>
+    <div class="flex items-center">
+      <div class="h-3 w-3 rounded-full bg-success mr-1.5"></div>
+      <span class="text-gray-700 dark:text-gray-300">End Date</span>
+    </div>
+  </div>
+</div>

@@ -9,161 +9,164 @@
 
   <!-- Dashboard content -->
   <div *ngIf="isLoading" class="flex justify-center py-12">
-    <app-spinner [size]="'lg'" [showLabel]="true" label="Loading dashboard data..."></app-spinner>
+    <div class="inline-block h-10 w-10 animate-spin rounded-full border-4 border-solid border-primary-600 border-r-transparent"></div>
   </div>
 
-  <div *ngIf="!isLoading" class="space-y-6">
-    <!-- Stats cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <!-- Total campaigns -->
-      <div class="card card-hover bg-white dark:bg-gray-800 p-6 flex items-center">
-        <div class="rounded-full bg-primary-100 dark:bg-primary-900/50 p-3 mr-4">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-          </svg>
-        </div>
-        <div>
-          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Campaigns</p>
-          <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ stats.totalCampaigns }}</p>
-          <p class="text-sm text-gray-500 dark:text-gray-400">
-            <span class="text-primary-600 dark:text-primary-400">{{ stats.activeCampaigns }}</span> active
-          </p>
-        </div>
-      </div>
-
-      <!-- Total contributions -->
-      <div class="card card-hover bg-white dark:bg-gray-800 p-6 flex items-center">
-        <div class="rounded-full bg-success-100 dark:bg-success-900/50 p-3 mr-4">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-success dark:text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </div>
-        <div>
-          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Contributions</p>
-          <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ stats.totalContributions }}</p>
-        </div>
-      </div>
-
-      <!-- Total funds raised -->
-      <div class="card card-hover bg-white dark:bg-gray-800 p-6 flex items-center">
-        <div class="rounded-full bg-success-100 dark:bg-success-900/50 p-3 mr-4">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-success dark:text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-          </svg>
-        </div>
-        <div>
-          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Raised</p>
-          <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ formatCurrency(stats.totalRaised) }}</p>
-        </div>
-      </div>
-
-      <!-- Pending pledges -->
-      <div class="card card-hover bg-white dark:bg-gray-800 p-6 flex items-center">
-        <div class="rounded-full bg-warning-100 dark:bg-warning-900/50 p-3 mr-4">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-warning dark:text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-          </svg>
-        </div>
-        <div>
-          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Pending Pledges</p>
-          <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ stats.pendingPledges }}</p>
-        </div>
+  <div *ngIf="!isLoading" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- Sidebar with campaign tabs -->
+    <div class="lg:col-span-3">
+      <div class="card bg-white dark:bg-gray-800 p-4">
+        <app-campaign-tabs
+          [createdCampaigns]="createdCampaigns"
+          [contributedCampaigns]="contributedCampaigns"
+          [activeTab]="activeTab"
+          [selectedCampaignId]="selectedCampaign?.id || null"
+          (tabChange)="onTabChange($event)"
+          (campaignSelect)="selectCampaign($event)"
+        ></app-campaign-tabs>
       </div>
     </div>
 
-    <!-- Recent activity -->
-    <div class="card bg-white dark:bg-gray-800 overflow-hidden">
-      <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-        <h2 class="text-lg font-medium text-gray-900 dark:text-white">Recent Activity</h2>
+    <!-- Main content area -->
+    <div class="lg:col-span-9 space-y-6">
+      <!-- Campaign details -->
+      <div *ngIf="selectedCampaign" class="card bg-white dark:bg-gray-800 p-6">
+        <app-campaign-detail [campaign]="selectedCampaign"></app-campaign-detail>
       </div>
-      <div class="p-6">
-        <div *ngIf="recentActivities.length === 0" class="py-4 text-center text-gray-500 dark:text-gray-400">
-          No recent activities to display.
-        </div>
 
-        <ul *ngIf="recentActivities.length > 0" class="divide-y divide-gray-200 dark:divide-gray-700">
-          <li *ngFor="let activity of recentActivities" class="py-4">
-            <div class="flex items-start">
-              <!-- Activity icon -->
-              <div class="rounded-full p-2 mr-4"
-                   [ngClass]="{
-                  'bg-success-100 dark:bg-success-900/50': activity.type === 'contribution',
-                  'bg-warning-100 dark:bg-warning-900/50': activity.type === 'pledge',
-                  'bg-primary-100 dark:bg-primary-900/50': activity.type === 'campaign_created'
-                }">
-                <!-- Contribution icon -->
-                <svg *ngIf="activity.type === 'contribution'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success dark:text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-
-                <!-- Pledge icon -->
-                <svg *ngIf="activity.type === 'pledge'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-warning dark:text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-
-                <!-- Campaign creation icon -->
-                <svg *ngIf="activity.type === 'campaign_created'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                </svg>
-              </div>
-
-              <!-- Activity content -->
-              <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-gray-900 dark:text-white">
-                  <ng-container [ngSwitch]="activity.type">
-                    <ng-container *ngSwitchCase="'contribution'">
-                      {{ activity.user }} contributed {{ formatCurrency(activity.amount) }} to <strong>{{ activity.campaign }}</strong>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'pledge'">
-                      {{ activity.user }} pledged {{ formatCurrency(activity.amount) }} to <strong>{{ activity.campaign }}</strong>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'campaign_created'">
-                      {{ activity.user }} created a new campaign: <strong>{{ activity.campaign }}</strong>
-                    </ng-container>
-                  </ng-container>
-                </p>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  {{ activity.date | date:'medium' }}
-                </p>
-              </div>
-            </div>
-          </li>
-        </ul>
-
-        <div class="mt-4 text-center">
-          <button type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-            View All Activity
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Quick actions -->
-    <div class="card bg-white dark:bg-gray-800 overflow-hidden">
-      <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-        <h2 class="text-lg font-medium text-gray-900 dark:text-white">Quick Actions</h2>
-      </div>
-      <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-        <button type="button" class="inline-flex items-center justify-center px-4 py-3 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+      <!-- No campaign selected message -->
+      <div *ngIf="!selectedCampaign" class="card bg-white dark:bg-gray-800 p-6 text-center py-12">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+        </svg>
+        <h2 class="text-xl font-medium text-gray-900 dark:text-white mb-2">No Campaign Selected</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">Select a campaign from the sidebar or create a new one.</p>
+        <a routerLink="/dashboard/campaigns/create" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
           </svg>
           Create New Campaign
-        </button>
+        </a>
+      </div>
 
-        <button type="button" class="inline-flex items-center justify-center px-4 py-3 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-success hover:bg-success-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-success">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          Make a Contribution
-        </button>
+      <!-- Quick actions -->
+      <div *ngIf="selectedCampaign" class="card bg-white dark:bg-gray-800 p-6">
+        <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Quick Actions</h2>
+        <app-quick-actions [campaign]="selectedCampaign"></app-quick-actions>
+      </div>
 
-        <button type="button" class="inline-flex items-center justify-center px-4 py-3 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-warning hover:bg-warning-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-warning">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-          </svg>
-          Make a Pledge
-        </button>
+      <!-- Second row content -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Recent activities -->
+        <div class="card bg-white dark:bg-gray-800 p-6">
+          <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Recent Activities</h2>
+          <app-recent-activities
+            [activities]="recentActivities"
+            [campaignId]="selectedCampaign?.id"
+            [loading]="isLoading"
+          ></app-recent-activities>
+        </div>
+
+        <!-- Calendar with campaign dates -->
+        <div *ngIf="selectedCampaign" class="card bg-white dark:bg-gray-800 p-6">
+          <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Campaign Calendar</h2>
+          <app-campaign-calendar [campaign]="selectedCampaign"></app-campaign-calendar>
+        </div>
+      </div>
+
+      <!-- Third row content -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Top contributors -->
+        <div *ngIf="selectedCampaign" class="card bg-white dark:bg-gray-800 p-6">
+          <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Top Contributors</h2>
+          <app-top-contributors
+            [contributors]="topContributors"
+            [campaignId]="selectedCampaign.id"
+          ></app-top-contributors>
+        </div>
+
+        <!-- Recent contributions -->
+        <div *ngIf="selectedCampaign" class="card bg-white dark:bg-gray-800 p-6">
+          <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Recent Contributions</h2>
+          <div *ngIf="recentContributions.length === 0" class="py-6 text-center text-gray-500 dark:text-gray-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto mb-2 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p>No contributions to display yet.</p>
+          </div>
+
+          <ul *ngIf="recentContributions.length > 0" class="divide-y divide-gray-200 dark:divide-gray-700">
+            <li *ngFor="let contribution of recentContributions" class="py-4 flex items-center">
+              <!-- Contributor initials or anonymous label -->
+              <div *ngIf="!contribution.is_anonymous" class="h-10 w-10 rounded-full bg-primary-600 dark:bg-primary-700 flex items-center justify-center text-white font-medium">
+                {{ contribution.contributor_name.substring(0, 2).toUpperCase() }}
+              </div>
+              <div *ngIf="contribution.is_anonymous" class="h-10 w-10 rounded-full bg-gray-500 dark:bg-gray-700 flex items-center justify-center text-white font-medium">
+                AN
+              </div>
+
+              <!-- Contribution info -->
+              <div class="ml-3 flex-1">
+                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                  {{ contribution.is_anonymous ? 'Anonymous Contributor' : contribution.contributor_name }}
+                </p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">
+                  {{ contribution.date | date:'mediumDate' }} · {{ contribution.payment_method }}
+                </p>
+              </div>
+
+              <!-- Amount -->
+              <div class="flex-shrink-0 text-right">
+                <p class="text-sm font-medium text-success">
+                  {{ formatCurrency(contribution.amount) }}
+                </p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">
+                  {{ contribution.status }}
+                </p>
+              </div>
+            </li>
+          </ul>
+
+          <!-- View more link -->
+          <div *ngIf="recentContributions.length > 0" class="mt-4 text-center">
+            <a [routerLink]="['/dashboard/campaigns', selectedCampaign.id, 'contributions']" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+              View All Contributions
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Other campaigns -->
+      <div *ngIf="selectedCampaign && (contributedCampaigns.length > 1 || createdCampaigns.length > 0)" class="card bg-white dark:bg-gray-800 p-6">
+        <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Other Campaigns</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Display other campaigns from the currently active tab -->
+          <ng-container *ngIf="activeTab === 'contributed'">
+            <div *ngFor="let campaign of contributedCampaigns.slice(0, 3)">
+              <app-campaign-card
+                *ngIf="campaign.id !== selectedCampaign.id"
+                [campaign]="campaign"
+                [compact]="true"
+                [showActions]="false">
+              </app-campaign-card>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="activeTab === 'created'">
+            <div *ngFor="let campaign of createdCampaigns.slice(0, 3)">
+              <app-campaign-card
+                *ngIf="campaign.id !== selectedCampaign.id"
+                [campaign]="campaign"
+                [compact]="true"
+                [showActions]="false">
+              </app-campaign-card>
+            </div>
+          </ng-container>
+        </div>
       </div>
     </div>
   </div>

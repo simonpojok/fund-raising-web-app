@@ -1,0 +1,152 @@
+<div class="w-full">
+  <!-- Campaign header with banner if available -->
+  <div *ngIf="campaign.banner_url && !compact" class="relative rounded-lg overflow-hidden mb-4">
+    <img [src]="campaign.banner_url" [alt]="campaign.title" class="w-full h-48 object-cover">
+
+    <!-- Overlay gradient -->
+    <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4">
+      <h1 class="text-2xl font-bold text-white">{{ campaign.title }}</h1>
+
+      <!-- Urgent tag -->
+      <div *ngIf="campaign.is_urgent" class="absolute top-4 right-4">
+        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-danger text-white">
+          URGENT
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Campaign header without banner -->
+  <div *ngIf="!campaign.banner_url || compact" class="mb-4">
+    <div class="flex justify-between items-start">
+      <h1 [class.text-2xl]="!compact" [class.text-xl]="compact" class="font-bold text-gray-900 dark:text-white">
+        {{ campaign.title }}
+      </h1>
+
+      <!-- Urgent tag -->
+      <div *ngIf="campaign.is_urgent">
+        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-danger text-white">
+          URGENT
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Campaign description -->
+  <p *ngIf="!compact" class="text-gray-700 dark:text-gray-300 mb-6">
+    {{ campaign.description }}
+  </p>
+
+  <!-- Campaign progress -->
+  <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6">
+    <div class="flex justify-between items-end mb-2">
+      <div>
+        <h3 class="text-sm uppercase text-gray-500 dark:text-gray-400">Raised</h3>
+        <p class="text-xl font-bold text-gray-900 dark:text-white">
+          {{ formatCurrency(campaign.total_contributed) }}
+        </p>
+      </div>
+      <div class="text-right">
+        <div class="flex items-center justify-end">
+          <span class="text-sm text-gray-600 dark:text-gray-400 mr-2">Goal:</span>
+          <span class="text-base font-medium text-gray-900 dark:text-white">
+            {{ formatCurrency(campaign.target_amount) }}
+          </span>
+        </div>
+        <p class="text-sm text-success mt-1">{{ campaign.progress_percentage }}% complete</p>
+      </div>
+    </div>
+
+    <!-- Progress bar -->
+    <app-progress-bar
+      [progress]="campaign.progress_percentage"
+      [color]="getProgressColor()"
+      [height]="'h-4'"
+      [animate]="false"
+    ></app-progress-bar>
+
+    <!-- Campaign stats grid -->
+    <div class="grid grid-cols-3 gap-4 mt-4">
+      <!-- Remaining goal -->
+      <div class="text-center">
+        <h4 class="text-xs uppercase text-gray-500 dark:text-gray-400">Needed</h4>
+        <p class="text-base font-medium text-gray-900 dark:text-white">
+          {{ formatCurrency(getRemainingTarget()) }}
+        </p>
+      </div>
+
+      <!-- Time remaining -->
+      <div class="text-center">
+        <h4 class="text-xs uppercase text-gray-500 dark:text-gray-400">Time left</h4>
+        <p class="text-base font-medium text-gray-900 dark:text-white">
+          {{ getTimeRemaining() }}
+        </p>
+      </div>
+
+      <!-- Pledges -->
+      <div class="text-center">
+        <h4 class="text-xs uppercase text-gray-500 dark:text-gray-400">Pledged</h4>
+        <p class="text-base font-medium text-gray-900 dark:text-white">
+          {{ formatCurrency(campaign.total_pledged) }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Campaign details -->
+  <div *ngIf="!compact" class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6">
+    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Campaign Details</h3>
+
+    <div class="space-y-3">
+      <!-- Date and location -->
+      <div class="flex">
+        <div class="flex-shrink-0 w-28 text-gray-500 dark:text-gray-400">Event Date:</div>
+        <div class="flex-1 text-gray-900 dark:text-white">{{ formatDate(campaign.event_date) }}</div>
+      </div>
+
+      <div class="flex">
+        <div class="flex-shrink-0 w-28 text-gray-500 dark:text-gray-400">Location:</div>
+        <div class="flex-1 text-gray-900 dark:text-white">{{ campaign.location }}</div>
+      </div>
+
+      <!-- Campaign organizer -->
+      <div class="flex">
+        <div class="flex-shrink-0 w-28 text-gray-500 dark:text-gray-400">Coordinator:</div>
+        <div class="flex-1 text-gray-900 dark:text-white">{{ campaign.coordinator_name }}</div>
+      </div>
+
+      <!-- Category if available -->
+      <div class="flex" *ngIf="campaign.category">
+        <div class="flex-shrink-0 w-28 text-gray-500 dark:text-gray-400">Category:</div>
+        <div class="flex-1 text-gray-900 dark:text-white">{{ campaign.category }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions for non-compact view -->
+  <div *ngIf="!compact" class="flex flex-wrap gap-2">
+    <a [routerLink]="['/dashboard/campaigns', campaign.id, 'contribute']"
+       class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-success hover:bg-success-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-success">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      Contribute
+    </a>
+
+    <a [routerLink]="['/dashboard/campaigns', campaign.id, 'pledge']"
+       class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-warning hover:bg-warning-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-warning">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      </svg>
+      Make a Pledge
+    </a>
+
+    <button type="button"
+            class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+      </svg>
+      Share Campaign
+    </button>
+  </div>
+</div>
