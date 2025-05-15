@@ -70,7 +70,9 @@ export class ThemeService {
     if (theme === 'light') return false;
 
     // Use system preference if theme is 'system' or not set
-    return this.mediaQuery.matches;
+    // return this.mediaQuery.matches;
+    // @ts-ignore
+    return theme === 'dark';
   }
 
   private applyTheme(isDark: boolean): void {

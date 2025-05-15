@@ -5,7 +5,7 @@ export const routes: Routes = [
   // Redirect root to dashboard if authenticated, otherwise to login
   {
     path: '',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     redirectTo: 'dashboard',
     pathMatch: 'full'
   },
