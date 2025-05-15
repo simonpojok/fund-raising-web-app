@@ -1,9 +1,9 @@
-import { NgModule, Optional, SkipSelf } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {NgModule, Optional, SkipSelf} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {HTTP_INTERCEPTORS, provideHttpClient} from '@angular/common/http';
-import { AuthInterceptor } from './interceptors/auth.interceptor';
-import { ThemeService } from './services/theme.service';
-import { AuthService } from './services/auth.service';
+import {AuthInterceptor} from './interceptors/auth.interceptor';
+import {ThemeService} from './services/theme.service';
+import {AuthService} from './services/auth.service';
 
 @NgModule({
   declarations: [],
@@ -13,9 +13,10 @@ import { AuthService } from './services/auth.service';
   providers: [
     ThemeService,
     AuthService,
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
     provideHttpClient(),
-  ]
+  ],
+  exports: []
 })
 export class CoreModule {
   constructor(@Optional() @SkipSelf() parentModule: CoreModule) {

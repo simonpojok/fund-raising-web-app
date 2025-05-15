@@ -7,6 +7,7 @@ import { ButtonComponent } from './components/button/button.component';
 import { InputComponent } from './components/input/input.component';
 import { AlertComponent } from './components/alert/alert.component';
 import { SpinnerComponent } from './components/spinner/spinner.component';
+import {ClickOutsideDirective} from './directives/click-outside.directive';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { SpinnerComponent } from './components/spinner/spinner.component';
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
-    RouterModule
+    RouterModule,
+    ClickOutsideDirective
   ],
   exports: [
     CommonModule,
@@ -31,7 +33,8 @@ import { SpinnerComponent } from './components/spinner/spinner.component';
     ButtonComponent,
     InputComponent,
     AlertComponent,
-    SpinnerComponent
+    SpinnerComponent,
+    ClickOutsideDirective,
   ]
 })
 export class SharedModule { }

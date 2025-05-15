@@ -2,7 +2,7 @@
   <!-- Label -->
   <label
     *ngIf="label"
-    [for]="ngControl?.name"
+    [for]="ngControl.name"
     [class]="labelClasses"
   >
     {{ label }}
@@ -22,7 +22,7 @@
     <!-- Input field -->
     <input
       [type]="getInputType()"
-      [id]="ngControl?.name"
+      [id]="ngControl.name"
       [formControl]="internalControl"
       [placeholder]="placeholder"
       [disabled]="disabled"

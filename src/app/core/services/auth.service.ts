@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
 
@@ -40,6 +40,11 @@ export interface RegisterCredentials {
   phone_number?: string;
   password: string;
   confirm_password: string;
+}
+
+export interface PasswordChangeData {
+  old_password: string;
+  new_password: string;
 }
 
 @Injectable({
@@ -181,6 +186,45 @@ export class AuthService {
         tap(user => {
           localStorage.setItem(this.USER_KEY, JSON.stringify(user));
           this.currentUserSubject.next(user);
+        }),
+        catchError(error => {
+          return throwError(() => error);
+        })
+      );
+  }
+
+  updateUserProfile(userData: any, profileData: any): Observable<User> {
+    // Update user data first
+    return this.http.put<User>(`${this.API_URL}/profile/update/`, userData)
+      .pipe(
+        switchMap(user => {
+          // Then update profile data
+          return this.http.put<User>(`${this.API_URL}/profile/update/detail/`, profileData)
+            .pipe(
+              tap(updatedUser => {
+                localStorage.setItem(this.USER_KEY, JSON.stringify(updatedUser));
+                this.currentUserSubject.next(updatedUser);
+              })
+            );
+        }),
+        catchError(error => {
+          return throwError(() => error);
+        })
+      );
+  }
+
+  changePassword(passwordData: PasswordChangeData): Observable<any> {
+    return this.http.put<{ message: string, refresh: string, access: string }>(`${this.API_URL}/profile/change-password/`, passwordData)
+      .pipe(
+        tap(response => {
+          // Update tokens after password change
+          if (response.refresh && response.access) {
+            const tokens: AuthTokens = {
+              access: response.access,
+              refresh: response.refresh
+            };
+            this.setTokens(tokens);
+          }
         }),
         catchError(error => {
           return throwError(() => error);

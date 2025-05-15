@@ -1,0 +1,243 @@
+<div class="py-6">
+  <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-8">Your Profile</h1>
+
+  <!-- Loading state -->
+  <div *ngIf="isLoading" class="flex justify-center py-12">
+    <app-spinner [size]="'lg'" [showLabel]="true" label="Loading profile data..."></app-spinner>
+  </div>
+
+  <div *ngIf="!isLoading" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Profile summary card -->
+    <div class="card bg-white dark:bg-gray-800 p-6 flex flex-col items-center text-center">
+      <!-- User avatar (either image or initials) -->
+      <div *ngIf="currentUser?.photo_url; else avatarInitials" class="h-24 w-24 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
+        <img [src]="currentUser?.photo_url" alt="User avatar" class="h-full w-full object-cover">
+      </div>
+
+      <ng-template #avatarInitials>
+        <div class="h-24 w-24 rounded-full bg-primary-600 dark:bg-primary-700 flex items-center justify-center text-white text-3xl font-medium">
+          {{ getUserInitials() }}
+        </div>
+      </ng-template>
+
+      <h2 class="mt-4 text-xl font-bold text-gray-900 dark:text-white">{{ currentUser?.display_name }}</h2>
+      <p class="text-sm text-gray-500 dark:text-gray-400">{{ currentUser?.email }}</p>
+
+      <div class="mt-4 w-full border-t border-gray-200 dark:border-gray-700 pt-4">
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          <strong>Member since:</strong><br>
+          {{ currentUser?.created_at | date:'mediumDate' }}
+        </p>
+
+        <p *ngIf="currentUser?.profile?.location" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+          <strong>Location:</strong><br>
+          {{ currentUser?.profile?.location }}
+        </p>
+      </div>
+
+      <!-- Upload photo button - this would need a file upload service in a real app -->
+      <button type="button" class="mt-6 w-full flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        Upload Photo
+      </button>
+    </div>
+
+    <!-- Profile form -->
+    <div class="card bg-white dark:bg-gray-800 p-6 col-span-1 lg:col-span-2">
+      <h2 class="text-lg font-medium text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-3 mb-4">
+        Profile Information
+      </h2>
+
+      <!-- Success message -->
+      <app-alert
+        *ngIf="successMessage"
+        type="success"
+        [message]="successMessage"
+        class="mb-4"
+        (dismissed)="successMessage = ''"
+      ></app-alert>
+
+      <!-- Error message -->
+      <app-alert
+        *ngIf="errorMessage"
+        type="error"
+        [message]="errorMessage"
+        class="mb-4"
+        (dismissed)="errorMessage = ''"
+      ></app-alert>
+
+      <form [formGroup]="profileForm" (ngSubmit)="updateProfile()">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <!-- Name Input -->
+          <div>
+            <label for="display_name" class="input-label">Full Name</label>
+            <input
+              type="text"
+              id="display_name"
+              formControlName="display_name"
+              class="input-field"
+              [class.border-danger-500]="profileForm.get('display_name')?.invalid && (profileForm.get('display_name')?.dirty || profileForm.get('display_name')?.touched)"
+            >
+            <div *ngIf="profileForm.get('display_name')?.invalid && (profileForm.get('display_name')?.dirty || profileForm.get('display_name')?.touched)" class="input-error">
+              <span *ngIf="profileForm.get('display_name')?.errors?.['required']">Name is required.</span>
+              <span *ngIf="profileForm.get('display_name')?.errors?.['minlength']">Name must be at least 3 characters.</span>
+            </div>
+          </div>
+
+          <!-- Email Input (Disabled) -->
+          <div>
+            <label for="email" class="input-label">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              formControlName="email"
+              class="input-field bg-gray-100 dark:bg-gray-700 cursor-not-allowed"
+            >
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Contact support to change your email</p>
+          </div>
+        </div>
+
+        <!-- Phone Number Input -->
+        <div class="mb-4">
+          <label for="phone_number" class="input-label">Phone Number</label>
+          <input
+            type="tel"
+            id="phone_number"
+            formControlName="phone_number"
+            class="input-field"
+            [class.border-danger-500]="profileForm.get('phone_number')?.invalid && (profileForm.get('phone_number')?.dirty || profileForm.get('phone_number')?.touched)"
+          >
+          <div *ngIf="profileForm.get('phone_number')?.invalid && (profileForm.get('phone_number')?.dirty || profileForm.get('phone_number')?.touched)" class="input-error">
+            <span *ngIf="profileForm.get('phone_number')?.errors?.['pattern']">Please enter a valid phone number.</span>
+          </div>
+        </div>
+
+        <!-- Location Input -->
+        <div class="mb-4">
+          <label for="location" class="input-label">Location</label>
+          <input
+            type="text"
+            id="location"
+            formControlName="location"
+            class="input-field"
+            placeholder="e.g. Kampala, Uganda"
+          >
+        </div>
+
+        <!-- Bio Input -->
+        <div class="mb-4">
+          <label for="bio" class="input-label">Bio</label>
+          <textarea
+            id="bio"
+            formControlName="bio"
+            rows="4"
+            class="input-field"
+            placeholder="Tell us a little about yourself"
+          ></textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex justify-end">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="profileForm.invalid || isUpdating"
+          >
+            <span *ngIf="isUpdating" class="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent"></span>
+            {{ isUpdating ? 'Saving...' : 'Save Changes' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Change Password -->
+    <div class="card bg-white dark:bg-gray-800 p-6 col-span-1 lg:col-span-3">
+      <h2 class="text-lg font-medium text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-3 mb-4">
+        Change Password
+      </h2>
+
+      <!-- Success message -->
+      <app-alert
+        *ngIf="passwordSuccessMessage"
+        type="success"
+        [message]="passwordSuccessMessage"
+        class="mb-4"
+        (dismissed)="passwordSuccessMessage = ''"
+      ></app-alert>
+
+      <!-- Error message -->
+      <app-alert
+        *ngIf="passwordErrorMessage"
+        type="error"
+        [message]="passwordErrorMessage"
+        class="mb-4"
+        (dismissed)="passwordErrorMessage = ''"
+      ></app-alert>
+
+      <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Current Password Input -->
+          <div>
+            <label for="old_password" class="input-label">Current Password</label>
+            <input
+              type="password"
+              id="old_password"
+              formControlName="old_password"
+              class="input-field"
+              [class.border-danger-500]="passwordForm.get('old_password')?.invalid && (passwordForm.get('old_password')?.dirty || passwordForm.get('old_password')?.touched)"
+            >
+            <div *ngIf="passwordForm.get('old_password')?.invalid && (passwordForm.get('old_password')?.dirty || passwordForm.get('old_password')?.touched)" class="input-error">
+              <span *ngIf="passwordForm.get('old_password')?.errors?.['required']">Current password is required.</span>
+            </div>
+          </div>
+
+          <!-- New Password Input -->
+          <div>
+            <label for="new_password" class="input-label">New Password</label>
+            <input
+              type="password"
+              id="new_password"
+              formControlName="new_password"
+              class="input-field"
+              [class.border-danger-500]="passwordForm.get('new_password')?.invalid && (passwordForm.get('new_password')?.dirty || passwordForm.get('new_password')?.touched)"
+            >
+            <div *ngIf="passwordForm.get('new_password')?.invalid && (passwordForm.get('new_password')?.dirty || passwordForm.get('new_password')?.touched)" class="input-error">
+              <span *ngIf="passwordForm.get('new_password')?.errors?.['required']">New password is required.</span>
+              <span *ngIf="passwordForm.get('new_password')?.errors?.['minlength']">Password must be at least 8 characters.</span>
+            </div>
+          </div>
+
+          <!-- Confirm Password Input -->
+          <div>
+            <label for="confirm_password" class="input-label">Confirm New Password</label>
+            <input
+              type="password"
+              id="confirm_password"
+              formControlName="confirm_password"
+              class="input-field"
+              [class.border-danger-500]="passwordForm.get('confirm_password')?.invalid && (passwordForm.get('confirm_password')?.dirty || passwordForm.get('confirm_password')?.touched)"
+            >
+            <div *ngIf="passwordForm.get('confirm_password')?.invalid && (passwordForm.get('confirm_password')?.dirty || passwordForm.get('confirm_password')?.touched)" class="input-error">
+              <span *ngIf="passwordForm.get('confirm_password')?.errors?.['required']">Please confirm your new password.</span>
+              <span *ngIf="passwordForm.get('confirm_password')?.errors?.['passwordMismatch']">Passwords do not match.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex justify-end mt-4">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="passwordForm.invalid || isUpdatingPassword"
+          >
+            <span *ngIf="isUpdatingPassword" class="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent"></span>
+            {{ isUpdatingPassword ? 'Updating...' : 'Change Password' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

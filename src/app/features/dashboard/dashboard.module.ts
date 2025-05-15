@@ -28,13 +28,13 @@ const routes: Routes = [
     DashboardLayoutComponent,
     DashboardHomeComponent,
     SidebarComponent,
-    HeaderComponent,
-    UserProfileComponent
+    UserProfileComponent,
+    HeaderComponent
   ],
   imports: [
     CommonModule,
     SharedModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
   ]
 })
 export class DashboardModule { }

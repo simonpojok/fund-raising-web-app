@@ -1,4 +1,4 @@
-import { Directive, ElementRef, EventEmitter, HostListener, Output } from '@angular/core';
+import { Directive, ElementRef, EventEmitter, HostListener, Output, NgModule } from '@angular/core';
 
 @Directive({
   selector: '[clickOutside]',
@@ -17,3 +17,10 @@ export class ClickOutsideDirective {
     }
   }
 }
+
+@NgModule({
+  declarations: [],
+  imports: [ClickOutsideDirective],
+  exports: [ClickOutsideDirective]
+})
+export class ClickOutsideModule { }

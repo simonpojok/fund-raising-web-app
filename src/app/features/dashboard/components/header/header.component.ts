@@ -5,7 +5,8 @@ import { ThemeService } from '../../../../core/services/theme.service';
 
 @Component({
   selector: 'app-header',
-  templateUrl: './header.component.html'
+  templateUrl: './header.component.html',
+  standalone: false,
 })
 export class HeaderComponent implements OnInit {
   @Input() isSidebarOpen = true;
