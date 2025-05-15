@@ -1,0 +1,125 @@
+<div
+  *ngIf="isOpen"
+  (click)="onCloseSidebar()"
+  class="fixed inset-0 z-20 bg-black bg-opacity-50 transition-opacity lg:hidden"
+></div>
+
+<!-- Sidebar -->
+<aside
+  class="fixed inset-y-0 left-0 z-30 w-64 flex flex-col bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:h-screen"
+  [class.translate-x-0]="isOpen"
+  [class.-translate-x-full]="!isOpen"
+>
+  <!-- Sidebar header -->
+  <div class="flex items-center justify-between h-16 px-4 border-b border-gray-200 dark:border-gray-700">
+    <a routerLink="/dashboard" class="flex items-center">
+      <div class="text-primary-600 dark:text-primary-400 font-bold text-xl">Ajog Fundraising</div>
+    </a>
+
+    <!-- Close button - only visible on mobile -->
+    <button
+      (click)="onCloseSidebar()"
+      class="lg:hidden p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500"
+      aria-label="Close sidebar"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M6 18L18 6M6 6l12 12"
+        />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Sidebar content -->
+  <div class="flex-1 flex flex-col overflow-y-auto">
+    <!-- User profile section -->
+    <div class="px-4 py-6 border-b border-gray-200 dark:border-gray-700">
+      <div class="flex items-center">
+        <!-- User avatar (either image or initials) -->
+        <div *ngIf="currentUser?.photo_url; else avatarInitials" class="h-10 w-10 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
+          <img [src]="currentUser?.photo_url" alt="User avatar" class="h-full w-full object-cover">
+        </div>
+
+        <ng-template #avatarInitials>
+          <div class="h-10 w-10 rounded-full bg-primary-600 dark:bg-primary-700 flex items-center justify-center text-white font-medium">
+            {{ getUserInitials() }}
+          </div>
+        </ng-template>
+
+        <div class="ml-3">
+          <p class="text-sm font-medium text-gray-900 dark:text-white">{{ currentUser?.display_name || 'User' }}</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[180px]">{{ currentUser?.email || 'user@example.com' }}</p>
+        </div>
+      </div>
+
+      <!-- Create campaign button -->
+      <button
+        type="button"
+        routerLink="/dashboard/campaigns/create"
+        class="mt-4 w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition duration-150"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 mr-2"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+          />
+        </svg>
+        Create Campaign
+      </button>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="mt-4 px-2">
+      <div class="space-y-1">
+        <!-- Menu items -->
+        <a
+          *ngFor="let item of menuItems"
+          [routerLink]="item.route"
+          routerLinkActive="bg-primary-50 text-primary-600 dark:bg-primary-900/50 dark:text-primary-400"
+          [routerLinkActiveOptions]="{exact: item.route === '/dashboard/home'}"
+          class="group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors duration-150 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+          (click)="onCloseSidebar()"
+        >
+          <!-- Icon -->
+          <span class="mr-3 flex-shrink-0 h-6 w-6 flex items-center justify-center" [innerHTML]="item.icon"></span>
+
+          <!-- Title -->
+          <span class="flex-1">{{ item.title }}</span>
+
+          <!-- Badge -->
+          <span
+            *ngIf="item.badge"
+            class="ml-auto inline-block py-0.5 px-2 text-xs font-medium rounded-full bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-300"
+          >
+            {{ item.badge }}
+          </span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- App version/footer -->
+    <div class="mt-auto p-4 border-t border-gray-200 dark:border-gray-700">
+      <div class="text-xs text-gray-500 dark:text-gray-400 text-center">
+        <p>Version 1.0.0</p>
+        <p class="mt-1">&copy; 2025 Ajog Fundraising</p>
+      </div>
+    </div>
+  </div>
+</aside>

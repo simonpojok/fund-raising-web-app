@@ -1,0 +1,30 @@
+<button
+  [type]="type"
+  [class]="buttonClasses"
+  [disabled]="disabled || loading"
+  [attr.aria-label]="ariaLabel || null"
+  (click)="onClick($event)"
+>
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+
+  <!-- Left icon if provided -->
+  <span *ngIf="iconLeft && !loading" class="mr-2">
+    <ng-container [ngTemplateOutlet]="iconTemplate" [ngTemplateOutletContext]="{ icon: iconLeft }"></ng-container>
+  </span>
+
+  <!-- Button text -->
+  <ng-content></ng-content>
+
+  <!-- Right icon if provided -->
+  <span *ngIf="iconRight" class="ml-2">
+    <ng-container [ngTemplateOutlet]="iconTemplate" [ngTemplateOutletContext]="{ icon: iconRight }"></ng-container>
+  </span>
+</button>
+
+<!-- Template for rendering icons -->
+<ng-template #iconTemplate let-icon="icon">
+  <i [class]="icon"></i>
+</ng-template>

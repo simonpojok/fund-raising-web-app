@@ -1,0 +1,138 @@
+<div class="card slide-in-up">
+  <div class="text-center mb-6">
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Create an Account</h1>
+    <p class="mt-2 text-gray-600 dark:text-gray-300">Register to start fundraising</p>
+  </div>
+
+  <!-- Alert for errors -->
+  <app-alert
+    *ngIf="errorMessage"
+    type="error"
+    [message]="errorMessage"
+    class="mb-4"
+    (dismissed)="errorMessage = ''"
+  ></app-alert>
+
+  <!-- Registration Form -->
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-4">
+    <!-- Name Input -->
+    <app-input
+      label="Full Name"
+      type="text"
+      formControlName="display_name"
+      placeholder="Your full name"
+      autocomplete="name"
+      [icon]="'fas fa-user'"
+      iconPosition="left"
+      [validationMessages]="{
+        required: 'Full name is required',
+        minlength: 'Name must be at least 3 characters'
+      }"
+      [required]="true"
+    ></app-input>
+
+    <!-- Email Input -->
+    <app-input
+      label="Email Address"
+      type="email"
+      formControlName="email"
+      placeholder="Your email address"
+      autocomplete="email"
+      [icon]="'fas fa-envelope'"
+      iconPosition="left"
+      [validationMessages]="{
+        required: 'Email is required',
+        email: 'Please enter a valid email address'
+      }"
+      [required]="true"
+    ></app-input>
+
+    <!-- Phone Input -->
+    <app-input
+      label="Phone Number"
+      type="tel"
+      formControlName="phone_number"
+      placeholder="Your phone number"
+      autocomplete="tel"
+      [icon]="'fas fa-phone'"
+      iconPosition="left"
+      [validationMessages]="{
+        pattern: 'Please enter a valid phone number'
+      }"
+      [helperText]="'Optional'"
+    ></app-input>
+
+    <!-- Password Input -->
+    <app-input
+      label="Password"
+      type="password"
+      formControlName="password"
+      placeholder="Create a password"
+      autocomplete="new-password"
+      [icon]="'fas fa-lock'"
+      iconPosition="left"
+      [validationMessages]="{
+        required: 'Password is required',
+        minlength: 'Password must be at least 8 characters'
+      }"
+      [required]="true"
+    ></app-input>
+
+    <!-- Confirm Password Input -->
+    <app-input
+      label="Confirm Password"
+      type="password"
+      formControlName="confirm_password"
+      placeholder="Confirm your password"
+      autocomplete="new-password"
+      [icon]="'fas fa-lock'"
+      iconPosition="left"
+      [validationMessages]="{
+        required: 'Please confirm your password',
+        passwordMismatch: 'Passwords do not match'
+      }"
+      [required]="true"
+    ></app-input>
+
+    <!-- Terms Checkbox -->
+    <div class="flex items-start">
+      <div class="flex items-center h-5">
+        <input
+          id="termsAgreement"
+          type="checkbox"
+          formControlName="termsAgreement"
+          class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500 dark:bg-gray-800 dark:border-gray-700 dark:checked:bg-primary-600"
+        >
+      </div>
+      <div class="ml-3 text-sm">
+        <label for="termsAgreement" class="text-gray-700 dark:text-gray-300">
+          I agree to the <a href="#" class="text-primary-600 hover:underline dark:text-primary-400">Terms of Service</a> and <a href="#" class="text-primary-600 hover:underline dark:text-primary-400">Privacy Policy</a>
+        </label>
+        <div *ngIf="f['termsAgreement'].invalid && (f['termsAgreement'].dirty || f['termsAgreement'].touched)" class="mt-1 text-danger-600 text-xs">
+          You must agree to the terms to continue
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <app-button
+      type="submit"
+      variant="primary"
+      [fullWidth]="true"
+      [loading]="isLoading"
+      [disabled]="registerForm.invalid || isLoading"
+    >
+      Create Account
+    </app-button>
+  </form>
+
+  <!-- Login Link -->
+  <div class="mt-6 text-center">
+    <p class="text-sm text-gray-600 dark:text-gray-400">
+      Already have an account?
+      <a routerLink="/auth/login" class="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-medium">
+        Sign In
+      </a>
+    </p>
+  </div>
+</div>

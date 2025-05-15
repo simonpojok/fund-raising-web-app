@@ -1,0 +1,25 @@
+<div class="min-h-screen flex flex-col">
+  <!-- Header with logo and theme toggle -->
+  <header class="w-full py-4 px-6 flex justify-between items-center">
+    <div class="flex items-center">
+      <a routerLink="/" class="flex items-center">
+        <!-- Logo - Update with your actual logo -->
+        <div class="text-primary-600 dark:text-primary-400 font-bold text-2xl">Ajog Fundraising</div>
+      </a>
+    </div>
+
+    <app-theme-toggle></app-theme-toggle>
+  </header>
+
+  <!-- Main content -->
+  <main class="flex-grow flex items-center justify-center p-4">
+    <div class="w-full max-w-md fade-in">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full py-4 px-6 text-center text-gray-500 dark:text-gray-400 text-sm">
+    <p>&copy; {{ currentYear }} Ajog Fundraising. All rights reserved.</p>
+  </footer>
+</div>

@@ -1,0 +1,11 @@
+<div [class]="containerClasses">
+  <div class="flex flex-col items-center">
+    <div
+      [class]="spinnerSize + ' ' + spinnerColor"
+      class="animate-spin rounded-full border-4 border-solid border-current border-r-transparent"
+      role="status"
+    ></div>
+    <span *ngIf="showLabel" class="mt-2 text-sm font-medium" [class]="spinnerColor">{{ label }}</span>
+    <span *ngIf="!showLabel" class="sr-only">{{ label }}</span>
+  </div>
+</div>
