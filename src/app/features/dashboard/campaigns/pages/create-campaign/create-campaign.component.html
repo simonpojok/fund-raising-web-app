@@ -1,7 +1,8 @@
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-  <!-- Header -->
-  <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-    <div class="container-custom py-6">
+  <!-- Sticky Header -->
+  <div class="sticky top-0 z-50 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+    <!-- Header -->
+    <div class="container-custom py-4">
       <div class="flex items-center justify-between">
         <div>
           <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Create New Campaign</h1>
@@ -29,10 +30,8 @@
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Stepper Navigation -->
-  <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <!-- Stepper Navigation -->
     <div class="container-custom">
       <app-create-campaign-stepper
         [steps]="steps"
@@ -75,8 +74,8 @@
           <form [formGroup]="campaignForm" class="space-y-8">
             <!-- Step 1: Basic Information -->
             <div *ngIf="currentStep === 1" class="slide-in-up">
-              <div class="card">
-                <div class="mb-6">
+              <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+                <div class="mb-4">
                   <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Basic Information</h2>
                   <p class="text-gray-600 dark:text-gray-300 mt-1">
                     Provide the essential details about your campaign that will help people understand your cause.
@@ -92,8 +91,8 @@
 
             <!-- Step 2: Campaign Details -->
             <div *ngIf="currentStep === 2" class="slide-in-up">
-              <div class="card">
-                <div class="mb-6">
+              <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+                <div class="mb-4">
                   <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Campaign Details</h2>
                   <p class="text-gray-600 dark:text-gray-300 mt-1">
                     Add specific details about your event, location, and organizer information.
@@ -109,8 +108,8 @@
 
             <!-- Step 3: Settings & Permissions -->
             <div *ngIf="currentStep === 3" class="slide-in-up">
-              <div class="card">
-                <div class="mb-6">
+              <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+                <div class="mb-4">
                   <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Settings & Permissions</h2>
                   <p class="text-gray-600 dark:text-gray-300 mt-1">
                     Configure privacy settings, payment methods, and campaign preferences.
@@ -123,50 +122,13 @@
                 ></app-campaign-settings>
               </div>
             </div>
-
-            <!-- Step 4: Review & Publish -->
-            <div *ngIf="currentStep === 4" class="slide-in-up">
-              <div class="card">
-                <div class="mb-6">
-                  <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Review & Publish</h2>
-                  <p class="text-gray-600 dark:text-gray-300 mt-1">
-                    Review all the information and publish your campaign.
-                  </p>
-                </div>
-
-                <!-- Final validation summary -->
-                <div *ngIf="!isFormValid()" class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4 mb-6">
-                  <div class="flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-600 dark:text-yellow-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                    </svg>
-                    <span class="text-yellow-800 dark:text-yellow-200 font-medium">Please complete all required fields</span>
-                  </div>
-                  <p class="text-yellow-700 dark:text-yellow-300 text-sm mt-1">
-                    Go back to previous steps to fill in missing information.
-                  </p>
-                </div>
-
-                <div *ngIf="isFormValid()" class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4 mb-6">
-                  <div class="flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600 dark:text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span class="text-green-800 dark:text-green-200 font-medium">Campaign ready to publish!</span>
-                  </div>
-                  <p class="text-green-700 dark:text-green-300 text-sm mt-1">
-                    All required information has been provided. You can now publish your campaign.
-                  </p>
-                </div>
-              </div>
-            </div>
           </form>
         </div>
 
         <!-- Right Column - Preview -->
-        <div class="lg:sticky lg:top-8 lg:self-start">
-          <div class="card">
-            <div class="mb-6">
+        <div class="lg:sticky lg:top-40 lg:self-start">
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+            <div class="mb-4">
               <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Campaign Preview</h3>
               <p class="text-gray-600 dark:text-gray-300 mt-1">
                 This is how your campaign will appear to potential contributors
@@ -180,7 +142,7 @@
             ></app-campaign-preview>
 
             <!-- Action Buttons -->
-            <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
               <div class="flex flex-col space-y-3">
                 <!-- Primary Action Button -->
                 <div *ngIf="currentStep < totalSteps; else publishButton">
@@ -199,6 +161,25 @@
                 </div>
 
                 <ng-template #publishButton>
+                  <!-- Final validation message for last step -->
+                  <div *ngIf="!isFormValid()" class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3 mb-3">
+                    <div class="flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-600 dark:text-yellow-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                      </svg>
+                      <span class="text-yellow-800 dark:text-yellow-200 font-medium text-sm">Please complete all required fields</span>
+                    </div>
+                  </div>
+
+                  <div *ngIf="isFormValid()" class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-3 mb-3">
+                    <div class="flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600 dark:text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span class="text-green-800 dark:text-green-200 font-medium text-sm">Ready to publish!</span>
+                    </div>
+                  </div>
+
                   <app-button
                     type="button"
                     variant="success"
@@ -237,7 +218,7 @@
                     variant="outline"
                     [fullWidth]="true"
                     (buttonClick)="saveDraft()"
-                    [loading]="isSaving && currentStep !== 4"
+                    [loading]="isSaving && currentStep !== totalSteps"
                     [disabled]="isSaving"
                   >
                     Save Draft

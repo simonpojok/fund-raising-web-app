@@ -12,7 +12,7 @@ import {IStepperStep} from './interfaces/stepper-step.interface';
 })
 export class CreateCampaignComponent implements OnInit {
   currentStep = 1;
-  totalSteps = 4;
+  totalSteps = 3; // Reduced from 4 to 3 steps
   isLoading = false;
   isSaving = false;
   campaignCreated = false; // Track if campaign was successfully created
@@ -30,8 +30,8 @@ export class CreateCampaignComponent implements OnInit {
   steps: IStepperStep[] = [
     {id: 1, title: 'Basic Information', description: 'Campaign title, description, and goals'},
     {id: 2, title: 'Campaign Details', description: 'Event date, location, and organizer info'},
-    {id: 3, title: 'Settings & Permissions', description: 'Privacy settings and payment methods'},
-    {id: 4, title: 'Review & Publish', description: 'Review your campaign before publishing'}
+    {id: 3, title: 'Settings & Permissions', description: 'Privacy settings and payment methods'}
+    // Removed the preview step as it's now always visible
   ];
 
   constructor(
@@ -43,6 +43,7 @@ export class CreateCampaignComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeForm();
+    this.setupRealTimePreview();
   }
 
   initializeForm(): void {
@@ -53,12 +54,30 @@ export class CreateCampaignComponent implements OnInit {
     });
   }
 
+  setupRealTimePreview(): void {
+    // Subscribe to form changes for real-time preview updates
+    this.campaignForm.valueChanges.subscribe(formValue => {
+      this.updateFormData(formValue);
+    });
+  }
+
+  updateFormData(formValue: any): void {
+    this.formData = {
+      basicInfo: formValue.basicInfo || {},
+      details: formValue.details || {},
+      settings: formValue.settings || {}
+    };
+  }
+
   // Step navigation
   nextStep(): void {
     if (this.currentStep < this.totalSteps && this.isCurrentStepValid()) {
       this.saveCurrentStepData();
       this.currentStep++;
       this.errorMessage = '';
+    } else if (this.currentStep === this.totalSteps && this.isCurrentStepValid()) {
+      // If we're on the last step and form is valid, create the campaign
+      this.createCampaign();
     }
   }
 

@@ -20,7 +20,7 @@ export class CreateCampaignStepperComponent implements OnInit {
   @Output() stepChange = new EventEmitter<number>();
 
   // Properties for template
-  totalSteps: number = 4;
+  totalSteps: number = 3; // Updated to 3 steps
   isSaving: boolean = false;
 
   ngOnInit(): void {
