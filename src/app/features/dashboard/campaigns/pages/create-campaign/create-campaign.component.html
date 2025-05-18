@@ -1,6 +1,6 @@
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
   <!-- Sticky Header -->
-  <div class="sticky top-0 z-50 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+  <div class="top-0 z-50 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
     <!-- Header -->
     <div class="container-custom py-4">
       <div class="flex items-center justify-between">
@@ -44,7 +44,7 @@
 
   <!-- Main Content -->
   <div class="container-custom py-8">
-    <div class="max-w-7xl mx-auto">
+    <div>
       <!-- Alert Messages -->
       <app-alert
         *ngIf="errorMessage"
@@ -126,7 +126,7 @@
         </div>
 
         <!-- Right Column - Preview -->
-        <div class="lg:sticky lg:top-40 lg:self-start">
+        <div class="lg:top-40 lg:self-start">
           <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
             <div class="mb-4">
               <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Campaign Preview</h3>
