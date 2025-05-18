@@ -9,27 +9,34 @@ export interface StepperStep {
 @Component({
   selector: 'app-create-campaign-stepper',
   templateUrl: './create-campaign-stepper.component.html',
+  styleUrls: ['./create-campaign-stepper.component.scss'],
   standalone: false,
 })
-export class CreateCampaignStepperComponent {
+export class CreateCampaignStepperComponent implements OnInit {
   @Input() steps: StepperStep[] = [];
   @Input() currentStep: number = 1;
   @Input() canNavigateToStep!: (step: number) => boolean;
 
   @Output() stepChange = new EventEmitter<number>();
 
-  // Add the missing properties that the template expects
-  totalSteps: number = 4; // Default to 4 steps
-  isSaving: boolean = false; // Default state
+  // Properties for template
+  totalSteps: number = 4;
+  isSaving: boolean = false;
 
   ngOnInit(): void {
-    // Set total steps based on the steps array length
     this.totalSteps = this.steps.length;
   }
 
   onStepClick(step: number): void {
     if (this.canNavigateToStep(step)) {
       this.stepChange.emit(step);
+    }
+  }
+
+  onMobileStepChange(event: any): void {
+    const stepNumber = parseInt(event.target.value);
+    if (this.canNavigateToStep(stepNumber)) {
+      this.stepChange.emit(stepNumber);
     }
   }
 
@@ -45,72 +52,73 @@ export class CreateCampaignStepperComponent {
     }
   }
 
-  getStepClasses(step: StepperStep): string {
+  getStepCircleClasses(step: StepperStep): string {
     const status = this.getStepStatus(step);
-    const baseClasses = 'relative flex items-center transition-all duration-200';
+    const baseClasses = 'relative flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium transition-all duration-300 group-hover:scale-110';
 
     switch (status) {
       case 'completed':
-        return `${baseClasses} cursor-pointer hover:bg-green-50 dark:hover:bg-green-900/20`;
+        return `${baseClasses} bg-primary-600 dark:bg-primary-500 shadow-sm hover:bg-primary-700 dark:hover:bg-primary-400`;
       case 'current':
-        return `${baseClasses} bg-primary-50 dark:bg-primary-900/50`;
+        return `${baseClasses} bg-primary-600 dark:bg-primary-500 shadow-lg ring-4 ring-primary-100 dark:ring-primary-900 animate-pulse`;
       case 'upcoming':
-        return `${baseClasses} cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800`;
+        return `${baseClasses} bg-gray-100 dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 hover:border-gray-400 dark:hover:border-gray-500`;
       case 'disabled':
-        return `${baseClasses} cursor-not-allowed opacity-60`;
+        return `${baseClasses} bg-gray-100 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-600 cursor-not-allowed`;
       default:
         return baseClasses;
     }
   }
 
-  getStepConnectorClasses(stepIndex: number): string {
-    const isLastStep = stepIndex === this.steps.length - 1;
-    const nextStep = this.steps[stepIndex + 1];
-
-    if (isLastStep) return 'hidden';
-
-    const nextStepStatus = nextStep ? this.getStepStatus(nextStep) : 'disabled';
-    const currentStepStatus = this.getStepStatus(this.steps[stepIndex]);
-
-    if (currentStepStatus === 'completed' && (nextStepStatus === 'completed' || nextStepStatus === 'current')) {
-      return 'absolute top-4 left-4 -ml-px h-full w-0.5 bg-primary-600';
-    } else {
-      return 'absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-300 dark:bg-gray-600';
-    }
-  }
-
-  getStepNumberClasses(step: StepperStep): string {
+  getStepLabelClasses(step: StepperStep): string {
     const status = this.getStepStatus(step);
-    const baseClasses = 'relative z-10 flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium';
 
     switch (status) {
       case 'completed':
-        return `${baseClasses} bg-primary-600 text-white`;
+        return 'text-primary-600 dark:text-primary-400';
       case 'current':
-        return `${baseClasses} bg-primary-600 text-white border-2 border-primary-200 dark:border-primary-400`;
+        return 'text-primary-600 dark:text-primary-400 font-semibold';
       case 'upcoming':
-        return `${baseClasses} bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300`;
+        return 'text-gray-700 dark:text-gray-300';
       case 'disabled':
-        return `${baseClasses} bg-gray-100 dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500`;
+        return 'text-gray-400 dark:text-gray-600';
+      default:
+        return 'text-gray-700 dark:text-gray-300';
+    }
+  }
+
+  getProgressLineWidth(): number {
+    if (this.steps.length <= 1) return 0;
+
+    // Calculate progress as percentage between steps
+    const completedSteps = this.currentStep - 1;
+    const totalPossibleSteps = this.steps.length - 1;
+
+    return (completedSteps / totalPossibleSteps) * 100;
+  }
+
+  // Mobile step indicator classes (if using alternative approach)
+  getMobileStepClasses(step: StepperStep): string {
+    const status = this.getStepStatus(step);
+    const baseClasses = 'h-3 w-3 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200';
+
+    switch (status) {
+      case 'completed':
+        return `${baseClasses} bg-primary-600 dark:bg-primary-500`;
+      case 'current':
+        return `${baseClasses} bg-primary-600 dark:bg-primary-500 ring-2 ring-primary-200 dark:ring-primary-800`;
+      case 'upcoming':
+        return `${baseClasses} bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500`;
+      case 'disabled':
+        return `${baseClasses} bg-gray-200 dark:bg-gray-700 cursor-not-allowed`;
       default:
         return baseClasses;
     }
   }
 
-  // Add the missing methods that the template expects
+  // Methods expected by parent component
   getCompletionPercentage(): number {
     return Math.round((this.currentStep / this.totalSteps) * 100);
-  }
-
-  // Methods that are expected by the template but should be handled by parent
-  cancel(): void {
-    // This should be handled by the parent component
-    console.warn('Cancel method called on stepper - should be handled by parent');
-  }
-
-  saveDraft(): void {
-    // This should be handled by the parent component
-    console.warn('SaveDraft method called on stepper - should be handled by parent');
   }
 
   previousStep(): void {
@@ -125,23 +133,28 @@ export class CreateCampaignStepperComponent {
     }
   }
 
+  // Placeholder methods that should be handled by parent
+  cancel(): void {
+    console.warn('Cancel method should be handled by parent component');
+  }
+
+  saveDraft(): void {
+    console.warn('SaveDraft method should be handled by parent component');
+  }
+
   createCampaign(): void {
-    // This should be handled by the parent component
-    console.warn('CreateCampaign method called on stepper - should be handled by parent');
+    console.warn('CreateCampaign method should be handled by parent component');
   }
 
   isCurrentStepValid(): boolean {
-    // This should be determined by the parent component
     return true;
   }
 
   isFormValid(): boolean {
-    // This should be determined by the parent component
     return true;
   }
 
   prepareCampaignData(): any {
-    // This should be handled by the parent component
     return {};
   }
 }
