@@ -20,7 +20,7 @@ const routes: Routes = [
     children: [
       {path: 'create', component: CreateCampaignComponent},
       // Future routes:
-      // { path: ':id', component: CampaignDetailComponent },
+      // { path: ':id', component: e },
       // { path: ':id/edit', component: EditCampaignComponent },
       // { path: ':id/contribute', component: ContributeComponent },
       // { path: ':id/pledge', component: PledgeComponent },
