@@ -7,6 +7,7 @@ import {Component, Input, OnInit} from '@angular/core';
 })
 export class CampaignPreviewComponent implements OnInit {
   @Input() campaignData: any = {};
+  @Input() showShareButton: boolean = false; // Controls when to show share button
 
   constructor() {
   }
@@ -114,5 +115,38 @@ export class CampaignPreviewComponent implements OnInit {
     }
 
     return missing;
+  }
+
+  // Handle share campaign
+  shareCampaign(): void {
+    // Generate a shareable link (in a real app, this would be the actual campaign URL)
+    const campaignLink = `${window.location.origin}/campaigns/${this.campaignData.id || 'preview'}`;
+
+    // If Web Share API is available
+    if (navigator.share) {
+      navigator.share({
+        title: this.campaignData.title || 'Fundraising Campaign',
+        text: this.campaignData.description || 'Support this important cause',
+        url: campaignLink,
+      })
+        .catch((error) => console.log('Error sharing:', error));
+    } else {
+      // Fallback to copying to clipboard
+      navigator.clipboard.writeText(campaignLink)
+        .then(() => {
+          alert('Campaign link copied to clipboard!');
+        })
+        .catch(err => {
+          console.error('Failed to copy link: ', err);
+          // Fallback for older browsers
+          const textArea = document.createElement('textarea');
+          textArea.value = campaignLink;
+          document.body.appendChild(textArea);
+          textArea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textArea);
+          alert('Campaign link copied to clipboard!');
+        });
+    }
   }
 }

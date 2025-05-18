@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild, ElementRef} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {CreateCampaignService} from './services/create-campaign.service';
@@ -8,16 +8,14 @@ import {IStepperStep} from './interfaces/stepper-step.interface';
 @Component({
   selector: 'app-create-campaign',
   templateUrl: './create-campaign.component.html',
-  styleUrls: ['./create-campaign.component.scss'],
   standalone: false,
 })
 export class CreateCampaignComponent implements OnInit {
-  @ViewChild('previewContainer', {static: false}) previewContainer!: ElementRef;
-
   currentStep = 1;
   totalSteps = 4;
   isLoading = false;
   isSaving = false;
+  campaignCreated = false; // Track if campaign was successfully created
 
   campaignForm!: FormGroup;
   formData: ICampaignFormData = {
@@ -40,11 +38,11 @@ export class CreateCampaignComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private createCampaignService: CreateCampaignService
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.initializeForm();
-    this.setupFormWatchers();
   }
 
   initializeForm(): void {
@@ -55,25 +53,12 @@ export class CreateCampaignComponent implements OnInit {
     });
   }
 
-  setupFormWatchers(): void {
-    // Watch for form changes to update preview in real-time
-    this.campaignForm.valueChanges.subscribe(() => {
-      this.updatePreviewData();
-    });
-  }
-
-  updatePreviewData(): void {
-    // Update form data for live preview
-    this.saveCurrentStepData();
-  }
-
   // Step navigation
   nextStep(): void {
     if (this.currentStep < this.totalSteps && this.isCurrentStepValid()) {
       this.saveCurrentStepData();
       this.currentStep++;
       this.errorMessage = '';
-      this.scrollToTop();
     }
   }
 
@@ -81,7 +66,6 @@ export class CreateCampaignComponent implements OnInit {
     if (this.currentStep > 1) {
       this.currentStep--;
       this.errorMessage = '';
-      this.scrollToTop();
     }
   }
 
@@ -90,13 +74,6 @@ export class CreateCampaignComponent implements OnInit {
       this.saveCurrentStepData();
       this.currentStep = step;
       this.errorMessage = '';
-      this.scrollToTop();
-    }
-  }
-
-  scrollToTop(): void {
-    if (this.previewContainer) {
-      this.previewContainer.nativeElement.scrollTop = 0;
     }
   }
 
@@ -111,6 +88,7 @@ export class CreateCampaignComponent implements OnInit {
   }
 
   canNavigateToStep(step: number): boolean {
+    // Allow navigation to previous steps or if all previous steps are valid
     if (step <= this.currentStep) return true;
 
     for (let i = 1; i < step; i++) {
@@ -174,6 +152,7 @@ export class CreateCampaignComponent implements OnInit {
 
     const campaignData = this.prepareCampaignData();
 
+    // Validate data before submitting
     const validation = this.createCampaignService.validateCampaignData(campaignData);
     if (!validation.isValid) {
       this.isSaving = false;
@@ -184,31 +163,30 @@ export class CreateCampaignComponent implements OnInit {
     this.createCampaignService.createCampaign(campaignData).subscribe({
       next: (campaign) => {
         this.isSaving = false;
+        this.campaignCreated = true; // Enable share button in preview
         this.successMessage = 'Campaign created successfully!';
 
+        // Redirect to campaign dashboard after 3 seconds
         setTimeout(async () => {
           await this.router.navigate(['/dashboard/campaigns', campaign.id]);
-        }, 2000);
+        }, 3000);
       },
       error: (error) => {
         this.isSaving = false;
         console.error('Error creating campaign:', error);
-        this.handleSubmissionError(error);
+
+        if (error.error && typeof error.error === 'object') {
+          const firstErrorField = Object.keys(error.error)[0];
+          if (firstErrorField && error.error[firstErrorField][0]) {
+            this.errorMessage = error.error[firstErrorField][0];
+          } else {
+            this.errorMessage = 'Please check the form for errors.';
+          }
+        } else {
+          this.errorMessage = 'An error occurred while creating the campaign. Please try again.';
+        }
       }
     });
-  }
-
-  private handleSubmissionError(error: any): void {
-    if (error.error && typeof error.error === 'object') {
-      const firstErrorField = Object.keys(error.error)[0];
-      if (firstErrorField && error.error[firstErrorField][0]) {
-        this.errorMessage = error.error[firstErrorField][0];
-      } else {
-        this.errorMessage = 'Please check the form for errors.';
-      }
-    } else {
-      this.errorMessage = 'An error occurred while creating the campaign. Please try again.';
-    }
   }
 
   isFormValid(): boolean {
@@ -267,7 +245,6 @@ export class CreateCampaignComponent implements OnInit {
     return Math.round((this.currentStep / this.totalSteps) * 100);
   }
 
-  // Getters for form groups
   get basicInfoFormGroup(): FormGroup {
     return this.campaignForm.get('basicInfo') as FormGroup;
   }
@@ -278,17 +255,5 @@ export class CreateCampaignComponent implements OnInit {
 
   get settingsFormGroup(): FormGroup {
     return this.campaignForm.get('settings') as FormGroup;
-  }
-
-  // Get current step title
-  getCurrentStepTitle(): string {
-    const currentStepObj = this.steps.find(step => step.id === this.currentStep);
-    return currentStepObj ? currentStepObj.title : '';
-  }
-
-  // Get current step description
-  getCurrentStepDescription(): string {
-    const currentStepObj = this.steps.find(step => step.id === this.currentStep);
-    return currentStepObj ? currentStepObj.description : '';
   }
 }
