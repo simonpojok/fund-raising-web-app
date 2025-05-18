@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Campaign } from '../../../core/services/campaign.service';
+import {ICampaign} from '../../../core/interfaces';
 
 @Component({
   selector: 'app-campaign-tabs',
@@ -9,14 +9,14 @@ import { Campaign } from '../../../core/services/campaign.service';
   imports: [CommonModule]
 })
 export class CampaignTabsComponent implements OnInit {
-  @Input() createdCampaigns: Campaign[] = [];
-  @Input() contributedCampaigns: Campaign[] = [];
+  @Input() createdCampaigns: ICampaign[] = [];
+  @Input() contributedCampaigns: ICampaign[] = [];
   @Input() loading: boolean = false;
   @Input() activeTab: 'created' | 'contributed' = 'contributed';
   @Input() selectedCampaignId: string | null = null;
 
   @Output() tabChange = new EventEmitter<'created' | 'contributed'>();
-  @Output() campaignSelect = new EventEmitter<Campaign>();
+  @Output() campaignSelect = new EventEmitter<ICampaign>();
 
   constructor() {}
 
@@ -29,12 +29,12 @@ export class CampaignTabsComponent implements OnInit {
     }
   }
 
-  selectCampaign(campaign: Campaign): void {
+  selectCampaign(campaign: ICampaign): void {
     this.selectedCampaignId = campaign.id;
     this.campaignSelect.emit(campaign);
   }
 
-  getProgressClass(campaign: Campaign): string {
+  getProgressClass(campaign: ICampaign): string {
     const progress = campaign.progress_percentage;
 
     if (progress >= 100) return 'bg-success';

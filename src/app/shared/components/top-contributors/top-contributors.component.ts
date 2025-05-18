@@ -1,7 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { Contributor, CampaignService } from '../../../core/services/campaign.service';
+import {Component, Input, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {RouterModule} from '@angular/router';
+import {IContributor} from '../../../core/interfaces';
+import {CampaignService} from '../../../core/services';
 
 @Component({
   selector: 'app-top-contributors',
@@ -10,14 +11,16 @@ import { Contributor, CampaignService } from '../../../core/services/campaign.se
   imports: [CommonModule, RouterModule]
 })
 export class TopContributorsComponent implements OnInit {
-  @Input() contributors: Contributor[] = [];
+  @Input() contributors: IContributor[] = [];
   @Input() campaignId?: string;
   @Input() loading: boolean = false;
   @Input() limit: number = 5;
 
-  constructor(private campaignService: CampaignService) {}
+  constructor(private campaignService: CampaignService) {
+  }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+  }
 
   // Format date
   formatDate(dateString: string): string {

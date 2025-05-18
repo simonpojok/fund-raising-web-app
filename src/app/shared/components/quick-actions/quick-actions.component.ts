@@ -1,7 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { Campaign, CampaignService } from '../../../core/services/campaign.service';
+import {ICampaign} from '../../../core/interfaces';
+import {CampaignService} from '../../../core/services';
 
 interface QuickAction {
   icon: string;
@@ -19,7 +20,7 @@ interface QuickAction {
   imports: [CommonModule, RouterModule]
 })
 export class QuickActionsComponent implements OnInit {
-  @Input() campaign?: Campaign;
+  @Input() campaign?: ICampaign;
   @Input() showAll: boolean = false;
 
   actions: QuickAction[] = [];

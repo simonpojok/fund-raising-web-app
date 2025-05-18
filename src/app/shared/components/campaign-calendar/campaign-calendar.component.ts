@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Campaign } from '../../../core/services/campaign.service';
+import {ICampaign} from '../../../core/interfaces';
 
 interface CalendarDay {
   date: Date;
@@ -19,7 +19,7 @@ interface CalendarDay {
   imports: [CommonModule]
 })
 export class CampaignCalendarComponent implements OnInit {
-  @Input() campaign?: Campaign;
+  @Input() campaign?: ICampaign;
 
   currentDate = new Date();
   currentMonth: number;

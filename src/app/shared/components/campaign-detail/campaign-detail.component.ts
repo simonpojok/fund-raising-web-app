@@ -1,8 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { Campaign, CampaignService } from '../../../core/services/campaign.service';
 import { ProgressBarComponent } from '../progress-bar/progress-bar.component';
+import {ICampaign} from '../../../core/interfaces';
+import {CampaignService} from '../../../core/services';
 
 @Component({
   selector: 'app-campaign-detail',
@@ -11,7 +12,7 @@ import { ProgressBarComponent } from '../progress-bar/progress-bar.component';
   imports: [CommonModule, RouterModule, ProgressBarComponent]
 })
 export class CampaignDetailComponent implements OnInit {
-  @Input() campaign!: Campaign;
+  @Input() campaign!: ICampaign;
   @Input() compact: boolean = false;
 
   constructor(private campaignService: CampaignService) {}

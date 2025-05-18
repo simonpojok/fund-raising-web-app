@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { Campaign } from '../../../core/services/campaign.service';
 import { ProgressBarComponent } from '../progress-bar/progress-bar.component';
+import {ICampaign} from '../../../core/interfaces';
 
 @Component({
   selector: 'app-campaign-card',
@@ -11,7 +11,7 @@ import { ProgressBarComponent } from '../progress-bar/progress-bar.component';
   imports: [CommonModule, RouterModule, ProgressBarComponent]
 })
 export class CampaignCardComponent implements OnInit {
-  @Input() campaign!: Campaign;
+  @Input() campaign!: ICampaign;
   @Input() showActions: boolean = true;
   @Input() compact: boolean = false;
 

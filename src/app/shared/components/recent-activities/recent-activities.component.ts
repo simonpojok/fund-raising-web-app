@@ -1,7 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { CampaignActivity, CampaignService } from '../../../core/services/campaign.service';
+import { ICampaignActivity } from '../../../core/interfaces';
+import { CampaignService, ActivityService } from '../../../core/services';
 
 @Component({
   selector: 'app-recent-activities',
@@ -10,13 +11,16 @@ import { CampaignActivity, CampaignService } from '../../../core/services/campai
   imports: [CommonModule, RouterModule]
 })
 export class RecentActivitiesComponent implements OnInit {
-  @Input() activities: CampaignActivity[] = [];
+  @Input() activities: ICampaignActivity[] = [];
   @Input() campaignId?: string;
   @Input() loading: boolean = false;
   @Input() limit: number = 5;
   @Input() showViewMore: boolean = true;
 
-  constructor(private campaignService: CampaignService) {}
+  constructor(
+    private campaignService: CampaignService,
+    private activityService: ActivityService
+  ) {}
 
   ngOnInit(): void {
     // Component initialization
@@ -24,26 +28,7 @@ export class RecentActivitiesComponent implements OnInit {
 
   // Format time difference from now
   formatTimeAgo(dateString: string): string {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
-    const diffMinutes = Math.floor(diffTime / (1000 * 60));
-
-    if (diffDays > 0) {
-      return diffDays === 1 ? '1 day ago' : `${diffDays} days ago`;
-    }
-
-    if (diffHours > 0) {
-      return diffHours === 1 ? '1 hour ago' : `${diffHours} hours ago`;
-    }
-
-    if (diffMinutes > 0) {
-      return diffMinutes === 1 ? '1 minute ago' : `${diffMinutes} minutes ago`;
-    }
-
-    return 'Just now';
+    return this.activityService.formatTimeAgo(dateString);
   }
 
   // Format currency

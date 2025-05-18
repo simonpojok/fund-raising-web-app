@@ -1,28 +1,33 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import {CampaignCardComponent} from '../../../../shared/components/campaign-card/campaign-card.component';
+import {Component, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {RouterModule} from '@angular/router';
+import {ProgressBarComponent} from '../../../../shared/components/progress-bar/progress-bar.component';
 import {RecentActivitiesComponent} from '../../../../shared/components/recent-activities/recent-activities.component';
+import {CampaignCardComponent} from '../../../../shared/components/campaign-card/campaign-card.component';
 import {CampaignCalendarComponent} from '../../../../shared/components/campaign-calendar/campaign-calendar.component';
 import {QuickActionsComponent} from '../../../../shared/components/quick-actions/quick-actions.component';
 import {TopContributorsComponent} from '../../../../shared/components/top-contributors/top-contributors.component';
 import {CampaignTabsComponent} from '../../../../shared/components/campaign-tabs/campaign-tabs.component';
 import {CampaignDetailComponent} from '../../../../shared/components/campaign-detail/campaign-detail.component';
-import {AuthService, User} from '../../../../core/services/auth.service';
 import {
-  Campaign,
-  CampaignActivity, CampaignService,
-  Contribution,
-  Contributor,
-  Pledge
-} from '../../../../core/services/campaign.service';
+  ActivityService,
+  AuthService,
+  CampaignService,
+  ContributionService,
+  ContributorService,
+  PledgeService,
+  User
+} from '../../../../core/services';
+import {ICampaign, ICampaignActivity, IContribution, IContributor, IPledge} from '../../../../core/interfaces';
 
 @Component({
   selector: 'app-dashboard-home',
   templateUrl: './dashboard-home.component.html',
+  standalone: true,
   imports: [
     CommonModule,
     RouterModule,
+    // ProgressBarComponent,
     CampaignCardComponent,
     RecentActivitiesComponent,
     CampaignCalendarComponent,
@@ -37,21 +42,26 @@ export class DashboardHomeComponent implements OnInit {
   isLoading: boolean = true;
 
   // Dashboard data
-  createdCampaigns: Campaign[] = [];
-  contributedCampaigns: Campaign[] = [];
-  selectedCampaign: Campaign | null = null;
-  recentActivities: CampaignActivity[] = [];
-  topContributors: Contributor[] = [];
-  recentContributions: Contribution[] = [];
-  pendingPledges: Pledge[] = [];
+  createdCampaigns: ICampaign[] = [];
+  contributedCampaigns: ICampaign[] = [];
+  selectedCampaign: ICampaign | null = null;
+  recentActivities: ICampaignActivity[] = [];
+  topContributors: IContributor[] = [];
+  recentContributions: IContribution[] = [];
+  pendingPledges: IPledge[] = [];
 
   // UI state
   activeTab: 'created' | 'contributed' = 'contributed';
 
   constructor(
     private authService: AuthService,
-    private campaignService: CampaignService
-  ) {}
+    private campaignService: CampaignService,
+    private contributionService: ContributionService,
+    private pledgeService: PledgeService,
+    private contributorService: ContributorService,
+    private activityService: ActivityService
+  ) {
+  }
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {
@@ -99,7 +109,7 @@ export class DashboardHomeComponent implements OnInit {
     });
 
     // Load user's recent activities
-    this.campaignService.getUserActivities(10).subscribe({
+    this.activityService.getUserActivities(10).subscribe({
       next: (activities) => {
         this.recentActivities = activities;
       },
@@ -107,11 +117,41 @@ export class DashboardHomeComponent implements OnInit {
         console.error('Error loading recent activities:', error);
       }
     });
+
+    // Load recent contributions across all campaigns
+    this.contributionService.getRecentContributions(5).subscribe({
+      next: (contributions) => {
+        this.recentContributions = contributions;
+      },
+      error: (error) => {
+        console.error('Error loading recent contributions:', error);
+      }
+    });
+
+    // Load pending pledges across all campaigns
+    this.pledgeService.getPendingPledges(5).subscribe({
+      next: (pledges) => {
+        this.pendingPledges = pledges;
+      },
+      error: (error) => {
+        console.error('Error loading pending pledges:', error);
+      }
+    });
+
+    // Load top contributors across all campaigns
+    this.contributorService.getAllTopContributors(5).subscribe({
+      next: (contributors) => {
+        this.topContributors = contributors;
+      },
+      error: (error) => {
+        console.error('Error loading top contributors:', error);
+      }
+    });
   }
 
   loadCampaignDetails(campaignId: string): void {
     // Load top contributors for the campaign
-    this.campaignService.getTopContributors(campaignId).subscribe({
+    this.contributorService.getTopContributors(campaignId).subscribe({
       next: (contributors) => {
         this.topContributors = contributors;
       },
@@ -121,7 +161,7 @@ export class DashboardHomeComponent implements OnInit {
     });
 
     // Load recent contributions for the campaign
-    this.campaignService.getCampaignContributions(campaignId).subscribe({
+    this.contributionService.getCampaignContributions(campaignId).subscribe({
       next: (contributions) => {
         this.recentContributions = contributions.sort((a, b) =>
           new Date(b.date).getTime() - new Date(a.date).getTime()
@@ -133,7 +173,7 @@ export class DashboardHomeComponent implements OnInit {
     });
 
     // Load pending pledges for the campaign
-    this.campaignService.getCampaignPledges(campaignId).subscribe({
+    this.pledgeService.getCampaignPledges(campaignId).subscribe({
       next: (pledges) => {
         this.pendingPledges = pledges.filter(p => p.status === 'pending')
           .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -145,7 +185,7 @@ export class DashboardHomeComponent implements OnInit {
     });
 
     // Load campaign activities
-    this.campaignService.getCampaignActivities(campaignId).subscribe({
+    this.activityService.getCampaignActivities(campaignId).subscribe({
       next: (activities) => {
         this.recentActivities = activities;
       },
@@ -155,7 +195,7 @@ export class DashboardHomeComponent implements OnInit {
     });
   }
 
-  selectCampaign(campaign: Campaign): void {
+  selectCampaign(campaign: ICampaign): void {
     this.selectedCampaign = campaign;
     this.loadCampaignDetails(campaign.id);
   }
