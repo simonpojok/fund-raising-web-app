@@ -9,6 +9,7 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { HeaderComponent } from './components/header/header.component';
 import { UserProfileComponent } from './pages/user-profile/user-profile.component';
 import { authGuard } from '../../core/guards/auth.guard';
+import {SpinnerComponent} from '../../shared/components/spinner/spinner.component';
 
 const routes: Routes = [
   {
@@ -33,8 +34,8 @@ const routes: Routes = [
   ],
   imports: [
     CommonModule,
-    SharedModule,
     RouterModule.forChild(routes),
+    SpinnerComponent,
   ]
 })
 export class DashboardModule { }

@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {CommonModule, DatePipe} from '@angular/common';
 import {RouterModule} from '@angular/router';
 import {RecentActivitiesComponent} from '../../../../shared/components/recent-activities/recent-activities.component';
 import {CampaignCardComponent} from '../../../../shared/components/campaign-card/campaign-card.component';
@@ -8,6 +8,8 @@ import {QuickActionsComponent} from '../../../../shared/components/quick-actions
 import {TopContributorsComponent} from '../../../../shared/components/top-contributors/top-contributors.component';
 import {CampaignTabsComponent} from '../../../../shared/components/campaign-tabs/campaign-tabs.component';
 import {CampaignDetailComponent} from '../../../../shared/components/campaign-detail/campaign-detail.component';
+import {SpinnerComponent} from '../../../../shared/components/spinner/spinner.component';
+import {ClickOutsideDirective} from '../../../../shared/directives/click-outside.directive';
 import {
   ActivityService,
   AuthService,
@@ -26,18 +28,24 @@ import {ICampaign, ICampaignActivity, IContribution, IContributor, IPledge} from
   imports: [
     CommonModule,
     RouterModule,
+    DatePipe,
     CampaignCardComponent,
     RecentActivitiesComponent,
     CampaignCalendarComponent,
     QuickActionsComponent,
     TopContributorsComponent,
     CampaignTabsComponent,
-    CampaignDetailComponent
+    CampaignDetailComponent,
+    SpinnerComponent,
+    ClickOutsideDirective
   ]
 })
 export class DashboardHomeComponent implements OnInit {
   currentUser: User | null = null;
   isLoading: boolean = true;
+
+  // Campaign picker state
+  showCampaignPicker: boolean = false;
 
   // Dashboard data
   createdCampaigns: ICampaign[] = [];
@@ -193,9 +201,23 @@ export class DashboardHomeComponent implements OnInit {
     });
   }
 
+  // Campaign picker methods
+  toggleCampaignPicker(): void {
+    this.showCampaignPicker = !this.showCampaignPicker;
+  }
+
+  closeCampaignPicker(): void {
+    this.showCampaignPicker = false;
+  }
+
   selectCampaign(campaign: ICampaign): void {
     this.selectedCampaign = campaign;
     this.loadCampaignDetails(campaign.id);
+    this.closeCampaignPicker();
+  }
+
+  onCampaignSelect(campaign: ICampaign): void {
+    this.selectCampaign(campaign);
   }
 
   onTabChange(tab: 'created' | 'contributed'): void {

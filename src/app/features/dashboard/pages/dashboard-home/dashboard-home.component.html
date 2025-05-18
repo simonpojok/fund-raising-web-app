@@ -1,171 +1,313 @@
-<div class="py-6">
-  <!-- Welcome section -->
-  <div class="mb-8">
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-    <p class="mt-1 text-gray-600 dark:text-gray-300">
-      Welcome back, {{ currentUser?.display_name || 'User' }}! Here's an overview of your fundraising activities.
-    </p>
+<!-- src/app/features/dashboard/pages/dashboard-home/dashboard-home.component.html -->
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+  <!-- Header Section with Campaign Picker -->
+  <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <div class="px-6 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+            <p class="text-sm text-gray-600 dark:text-gray-300">
+              Welcome back, {{ currentUser?.display_name || 'User' }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Campaign Picker Button -->
+        <div class="relative">
+          <button
+            type="button"
+            (click)="toggleCampaignPicker()"
+            class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            <span>{{ selectedCampaign ? selectedCampaign?.title : 'Select Campaign' }}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <!-- Campaign Picker Dialog -->
+          <div
+            *ngIf="showCampaignPicker"
+            class="absolute right-0 top-full mt-2 w-96 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50"
+            (clickOutside)="closeCampaignPicker()"
+          >
+            <div class="p-4">
+              <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Select a Campaign</h3>
+              <app-campaign-tabs
+                [createdCampaigns]="createdCampaigns"
+                [contributedCampaigns]="contributedCampaigns"
+                [activeTab]="activeTab"
+                [selectedCampaignId]="selectedCampaign?.id || null"
+                [loading]="isLoading"
+                (tabChange)="onTabChange($event)"
+                (campaignSelect)="onCampaignSelect($event)"
+              ></app-campaign-tabs>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- Dashboard content -->
+  <!-- Loading State -->
   <div *ngIf="isLoading" class="flex justify-center py-12">
-    <div class="inline-block h-10 w-10 animate-spin rounded-full border-4 border-solid border-primary-600 border-r-transparent"></div>
+    <app-spinner [size]="'lg'" [showLabel]="true" label="Loading dashboard..."></app-spinner>
   </div>
 
-  <div *ngIf="!isLoading" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-    <!-- Sidebar with campaign tabs -->
-    <div class="lg:col-span-3">
-      <div class="card bg-white dark:bg-gray-800 p-4">
-        <app-campaign-tabs
-          [createdCampaigns]="createdCampaigns"
-          [contributedCampaigns]="contributedCampaigns"
-          [activeTab]="activeTab"
-          [selectedCampaignId]="selectedCampaign?.id || null"
-          (tabChange)="onTabChange($event)"
-          (campaignSelect)="selectCampaign($event)"
-        ></app-campaign-tabs>
+  <!-- Main Content -->
+  <div *ngIf="!isLoading" class="px-6 py-6">
+    <!-- Campaign Overview Section -->
+    <div *ngIf="selectedCampaign" class="mb-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Campaign Details Card -->
+        <div class="lg:col-span-2">
+          <div class="card">
+            <app-campaign-detail [campaign]="selectedCampaign" [compact]="true"></app-campaign-detail>
+          </div>
+        </div>
+
+        <!-- Quick Actions Card -->
+        <div class="lg:col-span-1">
+          <div class="card">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Quick Actions</h3>
+            <app-quick-actions [campaign]="selectedCampaign"></app-quick-actions>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Main content area -->
-    <div class="lg:col-span-9 space-y-6">
-      <!-- Campaign details -->
-      <div *ngIf="selectedCampaign" class="card bg-white dark:bg-gray-800 p-6">
-        <app-campaign-detail [campaign]="selectedCampaign"></app-campaign-detail>
-      </div>
-
-      <!-- No campaign selected message -->
-      <div *ngIf="!selectedCampaign" class="card bg-white dark:bg-gray-800 p-6 text-center py-12">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <!-- No Campaign Selected State -->
+    <div *ngIf="!selectedCampaign" class="text-center py-12">
+      <div class="max-w-md mx-auto">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 mx-auto mb-6 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
         </svg>
-        <h2 class="text-xl font-medium text-gray-900 dark:text-white mb-2">No Campaign Selected</h2>
-        <p class="text-gray-600 dark:text-gray-400 mb-4">Select a campaign from the sidebar or create a new one.</p>
-        <a routerLink="/dashboard/campaigns/create" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
-          Create New Campaign
-        </a>
+        <h2 class="text-2xl font-medium text-gray-900 dark:text-white mb-3">No Campaign Selected</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">
+          Select a campaign from above or create a new one to get started.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <button
+            type="button"
+            (click)="toggleCampaignPicker()"
+            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            Select Campaign
+          </button>
+          <a
+            routerLink="/dashboard/campaigns/create"
+            class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Create Campaign
+          </a>
+        </div>
       </div>
+    </div>
 
-      <!-- Quick actions -->
-      <div *ngIf="selectedCampaign" class="card bg-white dark:bg-gray-800 p-6">
-        <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Quick Actions</h2>
-        <app-quick-actions [campaign]="selectedCampaign"></app-quick-actions>
-      </div>
+    <!-- Dashboard Content Grid -->
+    <div *ngIf="selectedCampaign" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Left Column - Main Content -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Campaign Analytics -->
+        <div class="card">
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Campaign Performance</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Total Raised -->
+            <div class="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 p-4 rounded-lg">
+              <div class="flex items-center">
+                <div class="p-2 bg-blue-500 rounded-lg">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div class="ml-4">
+                  <p class="text-sm font-medium text-blue-600 dark:text-blue-400">Total Raised</p>
+                  <p class="text-2xl font-bold text-blue-900 dark:text-blue-100">{{ formatCurrency(selectedCampaign.total_contributed) }}</p>
+                </div>
+              </div>
+            </div>
 
-      <!-- Second row content -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Recent activities -->
-        <div class="card bg-white dark:bg-gray-800 p-6">
-          <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Recent Activities</h2>
+            <!-- Goal Progress -->
+            <div class="bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 p-4 rounded-lg">
+              <div class="flex items-center">
+                <div class="p-2 bg-green-500 rounded-lg">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H9a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+                <div class="ml-4">
+                  <p class="text-sm font-medium text-green-600 dark:text-green-400">Progress</p>
+                  <p class="text-2xl font-bold text-green-900 dark:text-green-100">{{ selectedCampaign.progress_percentage }}%</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Days Remaining -->
+            <div class="bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 p-4 rounded-lg">
+              <div class="flex items-center">
+                <div class="p-2 bg-purple-500 rounded-lg">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div class="ml-4">
+                  <p class="text-sm font-medium text-purple-600 dark:text-purple-400">Days Left</p>
+                  <p class="text-2xl font-bold text-purple-900 dark:text-purple-100">{{ selectedCampaign.days_remaining }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activities -->
+        <div class="card">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Recent Activities</h3>
+            <a
+              [routerLink]="['/dashboard/campaigns', selectedCampaign.id, 'activities']"
+              class="text-sm text-primary-600 dark:text-primary-400 hover:underline"
+            >
+              View all
+            </a>
+          </div>
           <app-recent-activities
             [activities]="recentActivities"
-            [campaignId]="selectedCampaign?.id"
+            [campaignId]="selectedCampaign.id"
             [loading]="isLoading"
+            [limit]="5"
+            [showViewMore]="false"
           ></app-recent-activities>
         </div>
 
-        <!-- Calendar with campaign dates -->
-        <div *ngIf="selectedCampaign" class="card bg-white dark:bg-gray-800 p-6">
-          <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Campaign Calendar</h2>
-          <app-campaign-calendar [campaign]="selectedCampaign"></app-campaign-calendar>
-        </div>
-      </div>
-
-      <!-- Third row content -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Top contributors -->
-        <div *ngIf="selectedCampaign" class="card bg-white dark:bg-gray-800 p-6">
-          <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Top Contributors</h2>
-          <app-top-contributors
-            [contributors]="topContributors"
-            [campaignId]="selectedCampaign.id"
-          ></app-top-contributors>
-        </div>
-
-        <!-- Recent contributions -->
-        <div *ngIf="selectedCampaign" class="card bg-white dark:bg-gray-800 p-6">
-          <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Recent Contributions</h2>
-          <div *ngIf="recentContributions.length === 0" class="py-6 text-center text-gray-500 dark:text-gray-400">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto mb-2 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <!-- Recent Contributions -->
+        <div class="card">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Recent Contributions</h3>
+            <a
+              [routerLink]="['/dashboard/campaigns', selectedCampaign.id, 'contributions']"
+              class="text-sm text-primary-600 dark:text-primary-400 hover:underline"
+            >
+              View all
+            </a>
+          </div>
+          <div *ngIf="recentContributions.length === 0" class="py-8 text-center text-gray-500 dark:text-gray-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-3 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <p>No contributions to display yet.</p>
+            <p>No contributions yet</p>
           </div>
-
-          <ul *ngIf="recentContributions.length > 0" class="divide-y divide-gray-200 dark:divide-gray-700">
-            <li *ngFor="let contribution of recentContributions" class="py-4 flex items-center">
-              <!-- Contributor initials or anonymous label -->
-              <div *ngIf="!contribution.is_anonymous" class="h-10 w-10 rounded-full bg-primary-600 dark:bg-primary-700 flex items-center justify-center text-white font-medium">
-                {{ contribution.contributor_name.substring(0, 2).toUpperCase() }}
+          <div *ngIf="recentContributions.length > 0" class="space-y-3">
+            <div *ngFor="let contribution of recentContributions.slice(0, 5)" class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+              <div class="flex items-center">
+                <div class="h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center">
+                  <span class="text-sm font-medium text-primary-700 dark:text-primary-300">
+                    {{ contribution.is_anonymous ? 'AN' : contribution.contributor_name.substring(0, 2).toUpperCase() }}
+                  </span>
+                </div>
+                <div class="ml-3">
+                  <p class="text-sm font-medium text-gray-900 dark:text-white">
+                    {{ contribution.is_anonymous ? 'Anonymous Contributor' : contribution.contributor_name }}
+                  </p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400">
+                    {{ contribution.date | date:'mediumDate' }}
+                  </p>
+                </div>
               </div>
-              <div *ngIf="contribution.is_anonymous" class="h-10 w-10 rounded-full bg-gray-500 dark:bg-gray-700 flex items-center justify-center text-white font-medium">
-                AN
-              </div>
-
-              <!-- Contribution info -->
-              <div class="ml-3 flex-1">
-                <p class="text-sm font-medium text-gray-900 dark:text-white">
-                  {{ contribution.is_anonymous ? 'Anonymous Contributor' : contribution.contributor_name }}
-                </p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">
-                  {{ contribution.date | date:'mediumDate' }} · {{ contribution.payment_method }}
-                </p>
-              </div>
-
-              <!-- Amount -->
-              <div class="flex-shrink-0 text-right">
-                <p class="text-sm font-medium text-success">
+              <div class="text-right">
+                <p class="text-sm font-medium text-green-600 dark:text-green-400">
                   {{ formatCurrency(contribution.amount) }}
                 </p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">
+                <p class="text-xs text-gray-500 dark:text-gray-400 capitalize">
                   {{ contribution.status }}
                 </p>
               </div>
-            </li>
-          </ul>
-
-          <!-- View more link -->
-          <div *ngIf="recentContributions.length > 0" class="mt-4 text-center">
-            <a [routerLink]="['/dashboard/campaigns', selectedCampaign.id, 'contributions']" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-              View All Contributions
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </a>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Other campaigns -->
-      <div *ngIf="selectedCampaign && (contributedCampaigns.length > 1 || createdCampaigns.length > 0)" class="card bg-white dark:bg-gray-800 p-6">
-        <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Other Campaigns</h2>
+      <!-- Right Column - Sidebar -->
+      <div class="lg:col-span-1 space-y-6">
+        <!-- Campaign Calendar -->
+        <div class="card">
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Campaign Calendar</h3>
+          <app-campaign-calendar [campaign]="selectedCampaign"></app-campaign-calendar>
+        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <!-- Display other campaigns from the currently active tab -->
-          <ng-container *ngIf="activeTab === 'contributed'">
-            <div *ngFor="let campaign of contributedCampaigns.slice(0, 3)">
-              <app-campaign-card
-                *ngIf="campaign.id !== selectedCampaign.id"
-                [campaign]="campaign"
-                [compact]="true"
-                [showActions]="false">
-              </app-campaign-card>
-            </div>
-          </ng-container>
+        <!-- Top Contributors -->
+        <div class="card">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Top Contributors</h3>
+            <a
+              [routerLink]="['/dashboard/campaigns', selectedCampaign.id, 'contributors']"
+              class="text-sm text-primary-600 dark:text-primary-400 hover:underline"
+            >
+              View all
+            </a>
+          </div>
+          <app-top-contributors
+            [contributors]="topContributors"
+            [campaignId]="selectedCampaign.id"
+            [limit]="5"
+          ></app-top-contributors>
+        </div>
 
-          <ng-container *ngIf="activeTab === 'created'">
-            <div *ngFor="let campaign of createdCampaigns.slice(0, 3)">
-              <app-campaign-card
-                *ngIf="campaign.id !== selectedCampaign.id"
-                [campaign]="campaign"
-                [compact]="true"
-                [showActions]="false">
-              </app-campaign-card>
-            </div>
-          </ng-container>
+        <!-- Other Campaigns Preview -->
+        <div *ngIf="(activeTab === 'contributed' && contributedCampaigns.length > 1) || (activeTab === 'created' && createdCampaigns.length > 1)" class="card">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+              Other {{ activeTab === 'created' ? 'Created' : 'Contributed' }} Campaigns
+            </h3>
+            <button
+              type="button"
+              (click)="toggleCampaignPicker()"
+              class="text-sm text-primary-600 dark:text-primary-400 hover:underline"
+            >
+              View all
+            </button>
+          </div>
+          <div class="space-y-3">
+            <ng-container *ngIf="activeTab === 'contributed'">
+              <div *ngFor="let campaign of contributedCampaigns.slice(0, 3)" class="cursor-pointer" (click)="selectCampaign(campaign)">
+                <div *ngIf="campaign.id !== selectedCampaign?.id" class="p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                  <div class="flex items-center justify-between">
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ campaign.title }}</p>
+                      <div class="w-full bg-gray-200 dark:bg-gray-700 h-1.5 rounded-full mt-2">
+                        <div class="h-1.5 rounded-full bg-primary-600" [style.width.%]="campaign.progress_percentage"></div>
+                      </div>
+                      <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ campaign.progress_percentage }}% complete</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="activeTab === 'created'">
+              <div *ngFor="let campaign of createdCampaigns.slice(0, 3)" class="cursor-pointer" (click)="selectCampaign(campaign)">
+                <div *ngIf="campaign.id !== selectedCampaign?.id" class="p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                  <div class="flex items-center justify-between">
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ campaign.title }}</p>
+                      <div class="w-full bg-gray-200 dark:bg-gray-700 h-1.5 rounded-full mt-2">
+                        <div class="h-1.5 rounded-full bg-primary-600" [style.width.%]="campaign.progress_percentage"></div>
+                      </div>
+                      <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ campaign.progress_percentage }}% complete</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
         </div>
       </div>
     </div>

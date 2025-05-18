@@ -22,10 +22,7 @@ import { CampaignDetailComponent } from './components/campaign-detail/campaign-d
 @NgModule({
   declarations: [
     ThemeToggleComponent,
-    ButtonComponent,
-    InputComponent,
-    AlertComponent,
-    SpinnerComponent
+    AlertComponent
   ],
   imports: [
     CommonModule,
@@ -40,7 +37,9 @@ import { CampaignDetailComponent } from './components/campaign-detail/campaign-d
     QuickActionsComponent,
     TopContributorsComponent,
     CampaignTabsComponent,
-    CampaignDetailComponent
+    CampaignDetailComponent,
+    InputComponent,
+    SpinnerComponent
   ],
   exports: [
     CommonModule,
@@ -48,10 +47,8 @@ import { CampaignDetailComponent } from './components/campaign-detail/campaign-d
     FormsModule,
     RouterModule,
     ThemeToggleComponent,
-    ButtonComponent,
     InputComponent,
     AlertComponent,
-    SpinnerComponent,
     ClickOutsideDirective,
     ProgressBarComponent,
     CampaignCardComponent,
