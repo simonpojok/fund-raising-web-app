@@ -2,18 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {CreateCampaignService} from './services/create-campaign.service';
-
-export interface CampaignFormData {
-  basicInfo: any;
-  details: any;
-  settings: any;
-}
-
-export interface StepperStep {
-  id: number;
-  title: string;
-  description: string;
-}
+import {ICampaignFormData} from './interfaces/campaign-form-data.interface';
+import {IStepperStep} from './interfaces/stepper-step.interface';
 
 @Component({
   selector: 'app-create-campaign',
@@ -27,7 +17,7 @@ export class CreateCampaignComponent implements OnInit {
   isSaving = false;
 
   campaignForm!: FormGroup;
-  formData: CampaignFormData = {
+  formData: ICampaignFormData = {
     basicInfo: null,
     details: null,
     settings: null
@@ -36,7 +26,7 @@ export class CreateCampaignComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
 
-  steps: StepperStep[] = [
+  steps: IStepperStep[] = [
     {id: 1, title: 'Basic Information', description: 'Campaign title, description, and goals'},
     {id: 2, title: 'Campaign Details', description: 'Event date, location, and organizer info'},
     {id: 3, title: 'Settings & Permissions', description: 'Privacy settings and payment methods'},
