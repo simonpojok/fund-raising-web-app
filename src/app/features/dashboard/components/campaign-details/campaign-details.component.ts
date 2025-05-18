@@ -1,18 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
-import {InputComponent} from '../../../../shared/components/input/input.component';
+import {Component, Input, OnInit} from '@angular/core';
+import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {AuthService} from '../../../../core/services';
 
 @Component({
   selector: 'app-campaign-details',
   templateUrl: './campaign-details.component.html',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    InputComponent
-  ]
+  standalone: false,
 })
 export class CampaignDetailsComponent implements OnInit {
   @Input() formGroup!: FormGroup;
@@ -25,7 +18,8 @@ export class CampaignDetailsComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.setupDateLimits();
@@ -85,7 +79,7 @@ export class CampaignDetailsComponent implements OnInit {
   }
 
   loadUserData(): void {
-    this.authService.currentUser$.subscribe((user) => {
+    this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
 
       // Pre-fill coordinator information with current user data
@@ -108,7 +102,7 @@ export class CampaignDetailsComponent implements OnInit {
     today.setHours(0, 0, 0, 0);
 
     if (selectedDate <= today) {
-      return { pastDate: true };
+      return {pastDate: true};
     }
 
     return null;

@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import {  Router } from '@angular/router';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {CreateCampaignService} from '../../services/create-campaign.service';
 
 export interface CampaignFormData {
   basicInfo: any;
@@ -30,17 +31,18 @@ export class CreateCampaignComponent implements OnInit {
   successMessage = '';
 
   steps = [
-    { id: 1, title: 'Basic Information', description: 'Campaign title, description, and goals' },
-    { id: 2, title: 'Campaign Details', description: 'Event date, location, and organizer info' },
-    { id: 3, title: 'Settings & Permissions', description: 'Privacy settings and payment methods' },
-    { id: 4, title: 'Review & Publish', description: 'Review your campaign before publishing' }
+    {id: 1, title: 'Basic Information', description: 'Campaign title, description, and goals'},
+    {id: 2, title: 'Campaign Details', description: 'Event date, location, and organizer info'},
+    {id: 3, title: 'Settings & Permissions', description: 'Privacy settings and payment methods'},
+    {id: 4, title: 'Review & Publish', description: 'Review your campaign before publishing'}
   ];
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private createCampaignService: CreateCampaignService
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.initializeForm();
@@ -152,6 +154,14 @@ export class CreateCampaignComponent implements OnInit {
     this.successMessage = '';
 
     const campaignData = this.prepareCampaignData();
+
+    // Validate data before submitting
+    const validation = this.createCampaignService.validateCampaignData(campaignData);
+    if (!validation.isValid) {
+      this.isSaving = false;
+      this.errorMessage = validation.errors[0];
+      return;
+    }
 
     this.createCampaignService.createCampaign(campaignData).subscribe({
       next: (campaign) => {

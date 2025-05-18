@@ -1,0 +1,300 @@
+<div [formGroup]="formGroup" class="space-y-8">
+
+  <!-- Privacy & Visibility Settings -->
+  <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Privacy & Visibility</h3>
+
+    <!-- Campaign Visibility -->
+    <div class="space-y-4">
+      <div class="flex items-start">
+        <div class="flex items-center h-5">
+          <input
+            id="isPublic"
+            type="checkbox"
+            formControlName="isPublic"
+            class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+          >
+        </div>
+        <div class="ml-3">
+          <label for="isPublic" class="font-medium text-gray-900 dark:text-white">
+            Make campaign publicly searchable
+          </label>
+          <p class="text-sm text-gray-600 dark:text-gray-300">
+            Allow your campaign to appear in search results and public listings.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-start">
+        <div class="flex items-center h-5">
+          <input
+            id="isInvitationOnly"
+            type="checkbox"
+            formControlName="isInvitationOnly"
+            class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+          >
+        </div>
+        <div class="ml-3">
+          <label for="isInvitationOnly" class="font-medium text-gray-900 dark:text-white">
+            Invitation only campaign
+          </label>
+          <p class="text-sm text-gray-600 dark:text-gray-300">
+            Only people you specifically invite can view and contribute to this campaign.
+          </p>
+        </div>
+      </div>
+
+      <!-- Privacy Level Display -->
+      <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+        <div class="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+          <span class="font-medium text-gray-900 dark:text-white">{{ getPrivacyLevel() }}</span>
+        </div>
+        <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
+          {{ getPrivacyDescription() }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contribution Settings -->
+  <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Contribution Settings</h3>
+
+    <div class="space-y-4">
+      <div class="flex items-start">
+        <div class="flex items-center h-5">
+          <input
+            id="allowAnonymousContributions"
+            type="checkbox"
+            formControlName="allowAnonymousContributions"
+            class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+          >
+        </div>
+        <div class="ml-3">
+          <label for="allowAnonymousContributions" class="font-medium text-gray-900 dark:text-white">
+            Allow anonymous contributions
+          </label>
+          <p class="text-sm text-gray-600 dark:text-gray-300">
+            Let people contribute without revealing their identity publicly.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-start">
+        <div class="flex items-center h-5">
+          <input
+            id="includePledges"
+            type="checkbox"
+            formControlName="includePledges"
+            class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+          >
+        </div>
+        <div class="ml-3">
+          <label for="includePledges" class="font-medium text-gray-900 dark:text-white">
+            Accept pledges
+          </label>
+          <p class="text-sm text-gray-600 dark:text-gray-300">
+            Allow people to make promises for future contributions or in-kind donations.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-start">
+        <div class="flex items-center h-5">
+          <input
+            id="allowComments"
+            type="checkbox"
+            formControlName="allowComments"
+            class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+          >
+        </div>
+        <div class="ml-3">
+          <label for="allowComments" class="font-medium text-gray-900 dark:text-white">
+            Allow comments and messages
+          </label>
+          <p class="text-sm text-gray-600 dark:text-gray-300">
+            Let contributors leave messages of support and well-wishes.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Communication Settings -->
+  <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Communication</h3>
+
+    <div class="space-y-4">
+      <div class="flex items-start">
+        <div class="flex items-center h-5">
+          <input
+            id="sendThankYouMessages"
+            type="checkbox"
+            formControlName="sendThankYouMessages"
+            class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+          >
+        </div>
+        <div class="ml-3">
+          <label for="sendThankYouMessages" class="font-medium text-gray-900 dark:text-white">
+            Send thank you messages
+          </label>
+          <p class="text-sm text-gray-600 dark:text-gray-300">
+            Automatically send thank you emails to contributors.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-start">
+        <div class="flex items-center h-5">
+          <input
+            id="autoApproveInvitees"
+            type="checkbox"
+            formControlName="autoApproveInvitees"
+            class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+            [disabled]="!formGroup.get('isInvitationOnly')?.value"
+          >
+        </div>
+        <div class="ml-3">
+          <label for="autoApproveInvitees"
+                 class="font-medium text-gray-900 dark:text-white"
+                 [class.text-gray-400]="!formGroup.get('isInvitationOnly')?.value"
+                 [class.dark:text-gray-500]="!formGroup.get('isInvitationOnly')?.value">
+            Auto-approve invitees
+          </label>
+          <p class="text-sm text-gray-600 dark:text-gray-300">
+            Automatically approve people who request to join after being invited.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Methods -->
+  <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white">Payment Methods</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-300">
+          Add at least one payment method for receiving contributions.
+        </p>
+      </div>
+      <app-button
+        type="button"
+        variant="outline"
+        (buttonClick)="addPaymentMethod()"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+        Add Custom
+      </app-button>
+    </div>
+
+    <!-- Quick Add Buttons -->
+    <div class="mb-6">
+      <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Quick Add:</p>
+      <div class="flex flex-wrap gap-2">
+        <button
+          *ngFor="let method of predefinedPaymentMethods"
+          type="button"
+          (click)="addPredefinedPaymentMethod(method)"
+          class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
+        >
+          {{ method.name }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Payment Methods List -->
+    <div *ngIf="paymentMethodsArray.length > 0" class="space-y-4">
+      <div *ngFor="let paymentMethod of paymentMethodsArray.controls; let i = index"
+           [formGroup]="paymentMethod"
+           class="p-4 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700">
+
+        <div class="flex items-start justify-between">
+          <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Payment Method Name -->
+            <div>
+              <label [for]="'payment-name-' + i" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Payment Method Name *
+              </label>
+              <input
+                [id]="'payment-name-' + i"
+                type="text"
+                formControlName="name"
+                placeholder="e.g., MTN Mobile Money"
+                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-800 dark:text-white text-sm"
+                [class.border-danger-500]="getPaymentMethodError(i, 'name')"
+              >
+              <div *ngIf="getPaymentMethodError(i, 'name')" class="mt-1 text-danger text-xs">
+                {{ getPaymentMethodError(i, 'name') }}
+              </div>
+            </div>
+
+            <!-- Account Details -->
+            <div>
+              <label [for]="'payment-number-' + i" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Account/Number Details *
+              </label>
+              <input
+                [id]="'payment-number-' + i"
+                type="text"
+                formControlName="number"
+                placeholder="Enter account number or details"
+                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-800 dark:text-white text-sm"
+                [class.border-danger-500]="getPaymentMethodError(i, 'number')"
+              >
+              <div *ngIf="getPaymentMethodError(i, 'number')" class="mt-1 text-danger text-xs">
+                {{ getPaymentMethodError(i, 'number') }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Remove Button -->
+          <button
+            type="button"
+            (click)="removePaymentMethod(i)"
+            class="ml-4 p-2 text-gray-400 hover:text-danger-600 focus:outline-none"
+            [attr.aria-label]="'Remove payment method ' + (i + 1)"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Payment Methods Message -->
+    <div *ngIf="paymentMethodsArray.length === 0" class="text-center py-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto text-gray-400 dark:text-gray-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+      </svg>
+      <p class="text-gray-500 dark:text-gray-400 text-sm">
+        Add at least one payment method to receive contributions.
+      </p>
+    </div>
+
+    <!-- Payment Methods Validation -->
+    <div *ngIf="!isPaymentMethodsValid() && paymentMethodsArray.length === 0"
+         class="mt-2 text-danger text-sm">
+      Please add at least one payment method.
+    </div>
+  </div>
+
+  <!-- Progress Summary -->
+  <div *ngIf="formGroup.valid && isPaymentMethodsValid()" class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4">
+    <div class="flex items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600 dark:text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+      <span class="text-green-800 dark:text-green-200 font-medium">Campaign settings completed!</span>
+    </div>
+    <p class="text-green-700 dark:text-green-300 text-sm mt-1">
+      Your campaign settings and payment methods are configured. Ready to review and publish!
+    </p>
+  </div>
+</div>

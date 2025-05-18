@@ -1,23 +1,17 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
-import {InputComponent} from '../../../../shared/components/input/input.component';
+import {Component, Input, OnInit} from '@angular/core';
+import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 
 @Component({
   selector: 'app-campaign-basic-info',
   templateUrl: './campaign-basic-info.component.html',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    InputComponent
-  ]
+  standalone: false,
 })
 export class CampaignBasicInfoComponent implements OnInit {
   @Input() formGroup!: FormGroup;
   @Input() initialData: any = null;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder) {
+  }
 
   ngOnInit(): void {
     this.setupForm();
@@ -59,15 +53,15 @@ export class CampaignBasicInfoComponent implements OnInit {
 
   // Campaign categories
   categories = [
-    { value: 'Education', label: 'Education' },
-    { value: 'Healthcare', label: 'Healthcare' },
-    { value: 'Community Project', label: 'Community Project' },
-    { value: 'Religious', label: 'Religious' },
-    { value: 'Personal', label: 'Personal' },
-    { value: 'Emergency', label: 'Emergency' },
-    { value: 'Sports', label: 'Sports' },
-    { value: 'Environmental', label: 'Environmental' },
-    { value: 'Other', label: 'Other' }
+    {value: 'Education', label: 'Education'},
+    {value: 'Healthcare', label: 'Healthcare'},
+    {value: 'Community Project', label: 'Community Project'},
+    {value: 'Religious', label: 'Religious'},
+    {value: 'Personal', label: 'Personal'},
+    {value: 'Emergency', label: 'Emergency'},
+    {value: 'Sports', label: 'Sports'},
+    {value: 'Environmental', label: 'Environmental'},
+    {value: 'Other', label: 'Other'}
   ];
 
   // Format currency display
@@ -87,7 +81,7 @@ export class CampaignBasicInfoComponent implements OnInit {
     input.value = formattedValue;
 
     // Update the form control with the raw number
-    this.formGroup.get('targetAmount')?.setValue(value, { emitEvent: false });
+    this.formGroup.get('targetAmount')?.setValue(value, {emitEvent: false});
   }
 
   // Character count for description

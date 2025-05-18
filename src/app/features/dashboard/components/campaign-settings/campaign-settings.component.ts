@@ -1,8 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
-import {InputComponent} from '../../../../shared/components/input/input.component';
-import {ButtonComponent} from '../../../../shared/components/button/button.component';
-import {CommonModule} from '@angular/common';
+import {Component, Input, OnInit} from '@angular/core';
+import {FormGroup, FormBuilder, Validators, FormArray} from '@angular/forms';
 
 interface PaymentMethod {
   name: string;
@@ -12,26 +9,21 @@ interface PaymentMethod {
 @Component({
   selector: 'app-campaign-settings',
   templateUrl: './campaign-settings.component.html',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    InputComponent,
-    ButtonComponent
-  ]
+  standalone: false,
 })
 export class CampaignSettingsComponent implements OnInit {
   @Input() formGroup!: FormGroup;
   @Input() initialData: any = null;
 
   predefinedPaymentMethods = [
-    { id: 'mtn', name: 'MTN Mobile Money', placeholder: '256700000000' },
-    { id: 'airtel', name: 'Airtel Money', placeholder: '256750000000' },
-    { id: 'bank', name: 'Bank Transfer', placeholder: 'Account: 123456789' },
-    { id: 'other', name: 'Other', placeholder: 'Enter details' }
+    {id: 'mtn', name: 'MTN Mobile Money', placeholder: '256700000000'},
+    {id: 'airtel', name: 'Airtel Money', placeholder: '256750000000'},
+    {id: 'bank', name: 'Bank Transfer', placeholder: 'Account: 123456789'},
+    {id: 'other', name: 'Other', placeholder: 'Enter details'}
   ];
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder) {
+  }
 
   ngOnInit(): void {
     this.setupForm();

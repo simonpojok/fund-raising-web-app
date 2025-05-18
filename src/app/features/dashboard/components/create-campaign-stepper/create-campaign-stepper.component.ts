@@ -1,5 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {Component, Input, Output, EventEmitter} from '@angular/core';
 
 export interface StepperStep {
   id: number;
