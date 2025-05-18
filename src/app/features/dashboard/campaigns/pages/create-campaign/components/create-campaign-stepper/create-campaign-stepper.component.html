@@ -1,231 +1,53 @@
-<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-  <!-- Header -->
-  <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-    <div class="container-custom py-6">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Create New Campaign</h1>
-          <p class="mt-1 text-gray-600 dark:text-gray-300">
-            Get started by providing basic information about your fundraising campaign.
-          </p>
+<nav aria-label="Campaign creation progress" class="py-6">
+  <ol class="overflow-hidden">
+    <li
+      *ngFor="let step of steps; let stepIndex = index"
+      [class]="getStepClasses(step)"
+      (click)="onStepClick(step.id)"
+    >
+      <div class="pl-8 pr-4 py-4 flex items-center">
+        <!-- Step connector line (for all steps except the last) -->
+        <div *ngIf="stepIndex < steps.length - 1" [class]="getStepConnectorClasses(stepIndex)"></div>
+
+        <!-- Step number/icon -->
+        <span [class]="getStepNumberClasses(step)">
+          <!-- Completed step - show checkmark -->
+          <svg
+            *ngIf="getStepStatus(step) === 'completed'"
+            class="h-5 w-5"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <!-- Other steps - show number -->
+          <span *ngIf="getStepStatus(step) !== 'completed'">{{ step.id }}</span>
+        </span>
+
+        <!-- Step content -->
+        <div class="ml-4 min-w-0 flex-1">
+          <h3 class="text-sm font-medium"
+              [class.text-gray-900]="getStepStatus(step) === 'current'"
+              [class.dark:text-white]="getStepStatus(step) === 'current'"
+              [class.text-gray-500]="getStepStatus(step) !== 'current'"
+              [class.dark:text-gray-400]="getStepStatus(step) !== 'current'">
+            {{ step.title }}
+          </h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">{{ step.description }}</p>
         </div>
 
-        <!-- Progress indicator -->
-        <div class="hidden md:block">
-          <div class="flex items-center space-x-2">
-            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
-              {{ currentStep }} of {{ totalSteps }}
-            </span>
-            <div class="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-              <div
-                class="bg-primary-600 h-2 rounded-full transition-all duration-300"
-                [style.width.%]="getCompletionPercentage()"
-              ></div>
-            </div>
-            <span class="text-sm text-gray-500 dark:text-gray-400">
-              {{ getCompletionPercentage() }}%
-            </span>
-          </div>
+        <!-- Current step indicator -->
+        <div *ngIf="getStepStatus(step) === 'current'" class="ml-4">
+          <svg class="h-5 w-5 text-primary-600 dark:text-primary-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 002 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd" />
+          </svg>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- Stepper Navigation -->
-  <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-    <div class="container-custom">
-      <app-create-campaign-stepper
-        [steps]="steps"
-        [currentStep]="currentStep"
-        [canNavigateToStep]="canNavigateToStep.bind(this)"
-        (stepChange)="goToStep($event)"
-      ></app-create-campaign-stepper>
-    </div>
-  </div>
-
-  <!-- Main Content -->
-  <div class="container-custom py-8">
-    <div class="max-w-4xl mx-auto">
-      <!-- Alert Messages -->
-      <app-alert
-        *ngIf="errorMessage"
-        type="error"
-        [message]="errorMessage"
-        class="mb-6"
-        (dismissed)="errorMessage = ''"
-      ></app-alert>
-
-      <app-alert
-        *ngIf="successMessage"
-        type="success"
-        [message]="successMessage"
-        class="mb-6"
-        (dismissed)="successMessage = ''"
-      ></app-alert>
-
-      <!-- Loading State -->
-      <div *ngIf="isLoading" class="flex justify-center py-12">
-        <app-spinner [size]="'lg'" [showLabel]="true" label="Loading..."></app-spinner>
-      </div>
-
-      <!-- Form Content -->
-      <form *ngIf="!isLoading" [formGroup]="campaignForm" class="space-y-8">
-        <!-- Step 1: Basic Information -->
-        <div *ngIf="currentStep === 1" class="slide-in-up">
-          <div class="card">
-            <div class="mb-6">
-              <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Basic Information</h2>
-              <p class="text-gray-600 dark:text-gray-300 mt-1">
-                Provide the essential details about your campaign that will help people understand your cause.
-              </p>
-            </div>
-
-            <app-campaign-basic-info
-              [formGroup]="campaignForm.get('basicInfo')!"
-              [initialData]="formData.basicInfo"
-            ></app-campaign-basic-info>
-          </div>
-        </div>
-
-        <!-- Step 2: Campaign Details -->
-        <div *ngIf="currentStep === 2" class="slide-in-up">
-          <div class="card">
-            <div class="mb-6">
-              <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Campaign Details</h2>
-              <p class="text-gray-600 dark:text-gray-300 mt-1">
-                Add specific details about your event, location, and organizer information.
-              </p>
-            </div>
-
-            <app-campaign-details
-              [formGroup]="campaignForm.get('details')!"
-              [initialData]="formData.details"
-            ></app-campaign-details>
-          </div>
-        </div>
-
-        <!-- Step 3: Settings & Permissions -->
-        <div *ngIf="currentStep === 3" class="slide-in-up">
-          <div class="card">
-            <div class="mb-6">
-              <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Settings & Permissions</h2>
-              <p class="text-gray-600 dark:text-gray-300 mt-1">
-                Configure privacy settings, payment methods, and campaign preferences.
-              </p>
-            </div>
-
-            <app-campaign-settings
-              [formGroup]="campaignForm.get('settings')!"
-              [initialData]="formData.settings"
-            ></app-campaign-settings>
-          </div>
-        </div>
-
-        <!-- Step 4: Preview & Publish -->
-        <div *ngIf="currentStep === 4" class="slide-in-up">
-          <div class="card">
-            <div class="mb-6">
-              <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Review & Publish</h2>
-              <p class="text-gray-600 dark:text-gray-300 mt-1">
-                Review all the information and publish your campaign.
-              </p>
-            </div>
-
-            <app-campaign-preview
-              [campaignData]="prepareCampaignData()"
-            ></app-campaign-preview>
-          </div>
-        </div>
-      </form>
-
-      <!-- Navigation Buttons -->
-      <div class="flex items-center justify-between mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
-        <!-- Left Side - Cancel & Save Draft -->
-        <div class="flex items-center space-x-3">
-          <app-button
-            type="button"
-            variant="outline"
-            (buttonClick)="cancel()"
-            [disabled]="isSaving"
-          >
-            Cancel
-          </app-button>
-
-          <app-button
-            type="button"
-            variant="secondary"
-            (buttonClick)="saveDraft()"
-            [loading]="isSaving && currentStep !== 4"
-            [disabled]="isSaving"
-          >
-            Save Draft
-          </app-button>
-        </div>
-
-        <!-- Right Side - Navigation -->
-        <div class="flex items-center space-x-3">
-          <!-- Previous Button -->
-          <app-button
-            *ngIf="currentStep > 1"
-            type="button"
-            variant="secondary"
-            (buttonClick)="previousStep()"
-            [disabled]="isSaving"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
-            Previous
-          </app-button>
-
-          <!-- Next Button -->
-          <app-button
-            *ngIf="currentStep < totalSteps"
-            type="button"
-            variant="primary"
-            (buttonClick)="nextStep()"
-            [disabled]="!isCurrentStepValid() || isSaving"
-          >
-            Next
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </app-button>
-
-          <!-- Publish Button -->
-          <app-button
-            *ngIf="currentStep === totalSteps"
-            type="button"
-            variant="success"
-            (buttonClick)="createCampaign()"
-            [loading]="isSaving"
-            [disabled]="!isFormValid() || isSaving"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-            </svg>
-            Publish Campaign
-          </app-button>
-        </div>
-      </div>
-
-      <!-- Mobile Progress Indicator -->
-      <div class="md:hidden mt-6 bg-white dark:bg-gray-800 p-4 rounded-lg">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Step {{ currentStep }} of {{ totalSteps }}
-          </span>
-          <span class="text-sm text-gray-500 dark:text-gray-400">
-            {{ getCompletionPercentage() }}% complete
-          </span>
-        </div>
-        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-          <div
-            class="bg-primary-600 h-2 rounded-full transition-all duration-300"
-            [style.width.%]="getCompletionPercentage()"
-          ></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+    </li>
+  </ol>
+</nav>

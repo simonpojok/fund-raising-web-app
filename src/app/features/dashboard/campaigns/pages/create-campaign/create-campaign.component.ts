@@ -9,6 +9,12 @@ export interface CampaignFormData {
   settings: any;
 }
 
+export interface StepperStep {
+  id: number;
+  title: string;
+  description: string;
+}
+
 @Component({
   selector: 'app-create-campaign',
   templateUrl: './create-campaign.component.html',
@@ -30,7 +36,7 @@ export class CreateCampaignComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
 
-  steps = [
+  steps: StepperStep[] = [
     {id: 1, title: 'Basic Information', description: 'Campaign title, description, and goals'},
     {id: 2, title: 'Campaign Details', description: 'Event date, location, and organizer info'},
     {id: 3, title: 'Settings & Permissions', description: 'Privacy settings and payment methods'},
@@ -245,5 +251,17 @@ export class CreateCampaignComponent implements OnInit {
   // Get completion percentage
   getCompletionPercentage(): number {
     return Math.round((this.currentStep / this.totalSteps) * 100);
+  }
+
+  get basicInfoFormGroup(): FormGroup {
+    return this.campaignForm.get('basicInfo') as FormGroup;
+  }
+
+  get detailsFormGroup(): FormGroup {
+    return this.campaignForm.get('details') as FormGroup;
+  }
+
+  get settingsFormGroup(): FormGroup {
+    return this.campaignForm.get('settings') as FormGroup;
   }
 }

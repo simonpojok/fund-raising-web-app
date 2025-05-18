@@ -211,7 +211,7 @@
     <!-- Payment Methods List -->
     <div *ngIf="paymentMethodsArray.length > 0" class="space-y-4">
       <div *ngFor="let paymentMethod of paymentMethodsArray.controls; let i = index"
-           [formGroup]="paymentMethod"
+           [formGroup]="$any(paymentMethod)"
            class="p-4 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700">
 
         <div class="flex items-start justify-between">

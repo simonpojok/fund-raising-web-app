@@ -36,6 +36,7 @@ const routes: Routes = [
     CampaignPreviewComponent,
     CampaignSettingsComponent,
     CreateCampaignStepperComponent,
+    CreateCampaignComponent
   ],
   imports: [
     CommonModule,
