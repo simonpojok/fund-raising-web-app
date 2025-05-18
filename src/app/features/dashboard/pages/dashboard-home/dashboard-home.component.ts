@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {RouterModule} from '@angular/router';
-import {ProgressBarComponent} from '../../../../shared/components/progress-bar/progress-bar.component';
 import {RecentActivitiesComponent} from '../../../../shared/components/recent-activities/recent-activities.component';
 import {CampaignCardComponent} from '../../../../shared/components/campaign-card/campaign-card.component';
 import {CampaignCalendarComponent} from '../../../../shared/components/campaign-calendar/campaign-calendar.component';
@@ -27,7 +26,6 @@ import {ICampaign, ICampaignActivity, IContribution, IContributor, IPledge} from
   imports: [
     CommonModule,
     RouterModule,
-    // ProgressBarComponent,
     CampaignCardComponent,
     RecentActivitiesComponent,
     CampaignCalendarComponent,
