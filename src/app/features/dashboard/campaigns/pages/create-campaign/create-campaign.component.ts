@@ -165,8 +165,8 @@ export class CreateCampaignComponent implements OnInit {
         this.successMessage = 'Campaign created successfully!';
 
         // Redirect to campaign dashboard after 2 seconds
-        setTimeout(() => {
-          this.router.navigate(['/dashboard/campaigns', campaign.id]);
+        setTimeout(async () => {
+          await this.router.navigate(['/dashboard/campaigns', campaign.id]);
         }, 2000);
       },
       error: (error) => {
