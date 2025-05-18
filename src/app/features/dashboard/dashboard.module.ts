@@ -9,7 +9,8 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { HeaderComponent } from './components/header/header.component';
 import { UserProfileComponent } from './pages/user-profile/user-profile.component';
 import { authGuard } from '../../core/guards/auth.guard';
-import {SpinnerComponent} from '../../shared/components/spinner/spinner.component';
+import {CreateCampaignComponent} from './pages/create-campaign/create-campaign.component';
+import {CreateCampaignStepperComponent} from './components/create-campaign-stepper/create-campaign-stepper.component';
 
 const routes: Routes = [
   {
@@ -27,10 +28,12 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     DashboardLayoutComponent,
-    // DashboardHomeComponent,
+    DashboardHomeComponent,
     SidebarComponent,
     UserProfileComponent,
-    HeaderComponent
+    HeaderComponent,
+    CreateCampaignComponent,
+    CreateCampaignStepperComponent,
   ],
   imports: [
     CommonModule,

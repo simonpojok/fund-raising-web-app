@@ -1,15 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {CommonModule, DatePipe} from '@angular/common';
-import {RouterModule} from '@angular/router';
-import {RecentActivitiesComponent} from '../../../../shared/components/recent-activities/recent-activities.component';
-import {CampaignCardComponent} from '../../../../shared/components/campaign-card/campaign-card.component';
-import {CampaignCalendarComponent} from '../../../../shared/components/campaign-calendar/campaign-calendar.component';
-import {QuickActionsComponent} from '../../../../shared/components/quick-actions/quick-actions.component';
-import {TopContributorsComponent} from '../../../../shared/components/top-contributors/top-contributors.component';
-import {CampaignTabsComponent} from '../../../../shared/components/campaign-tabs/campaign-tabs.component';
-import {CampaignDetailComponent} from '../../../../shared/components/campaign-detail/campaign-detail.component';
-import {SpinnerComponent} from '../../../../shared/components/spinner/spinner.component';
-import {ClickOutsideDirective} from '../../../../shared/directives/click-outside.directive';
+
 import {
   ActivityService,
   AuthService,
@@ -20,25 +10,11 @@ import {
   User
 } from '../../../../core/services';
 import {ICampaign, ICampaignActivity, IContribution, IContributor, IPledge} from '../../../../core/interfaces';
-import {SharedModule} from '../../../../shared/shared.module';
 
 @Component({
   selector: 'app-dashboard-home',
   templateUrl: './dashboard-home.component.html',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    DatePipe,
-    RecentActivitiesComponent,
-    CampaignCalendarComponent,
-    QuickActionsComponent,
-    TopContributorsComponent,
-    CampaignTabsComponent,
-    CampaignDetailComponent,
-    ClickOutsideDirective,
-    SharedModule,
-  ]
+  standalone: false,
 })
 export class DashboardHomeComponent implements OnInit {
   currentUser: User | null = null;
