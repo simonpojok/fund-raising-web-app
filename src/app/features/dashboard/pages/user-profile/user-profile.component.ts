@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthService, User } from '../../../../core/services/auth.service';
+import { AuthService, User } from '../../../../core/services';
 
 @Component({
   selector: 'app-user-profile',

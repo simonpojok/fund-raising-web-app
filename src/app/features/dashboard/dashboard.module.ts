@@ -35,7 +35,7 @@ const routes: Routes = [
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
-    SpinnerComponent,
+    SharedModule,
   ]
 })
 export class DashboardModule { }

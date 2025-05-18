@@ -4,10 +4,7 @@ import {ControlValueAccessor, NgControl, FormControl, ReactiveFormsModule} from 
 @Component({
   selector: 'app-input',
   templateUrl: './input.component.html',
-
-  imports: [
-    ReactiveFormsModule
-  ]
+  standalone: false,
 })
 export class InputComponent implements ControlValueAccessor, OnChanges {
   @Input() type: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'date' = 'text';

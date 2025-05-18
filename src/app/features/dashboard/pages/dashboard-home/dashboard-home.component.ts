@@ -20,6 +20,7 @@ import {
   User
 } from '../../../../core/services';
 import {ICampaign, ICampaignActivity, IContribution, IContributor, IPledge} from '../../../../core/interfaces';
+import {SharedModule} from '../../../../shared/shared.module';
 
 @Component({
   selector: 'app-dashboard-home',
@@ -29,15 +30,14 @@ import {ICampaign, ICampaignActivity, IContribution, IContributor, IPledge} from
     CommonModule,
     RouterModule,
     DatePipe,
-    CampaignCardComponent,
     RecentActivitiesComponent,
     CampaignCalendarComponent,
     QuickActionsComponent,
     TopContributorsComponent,
     CampaignTabsComponent,
     CampaignDetailComponent,
-    SpinnerComponent,
-    ClickOutsideDirective
+    ClickOutsideDirective,
+    SharedModule,
   ]
 })
 export class DashboardHomeComponent implements OnInit {

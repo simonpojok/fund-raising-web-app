@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { ThemeService } from './core/services/theme.service';
+import { ThemeService } from './core/services';
 
 @Component({
   selector: 'app-root',
