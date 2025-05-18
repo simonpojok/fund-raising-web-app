@@ -1,6 +1,7 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {RouterModule, Routes} from '@angular/router';
+import {ReactiveFormsModule} from '@angular/forms';
 
 import {SharedModule} from '../../shared/shared.module';
 import {DashboardLayoutComponent} from './components/dashboard-layout/dashboard-layout.component';
@@ -9,11 +10,6 @@ import {SidebarComponent} from './components/sidebar/sidebar.component';
 import {HeaderComponent} from './components/header/header.component';
 import {UserProfileComponent} from './pages/user-profile/user-profile.component';
 import {authGuard} from '../../core/guards/auth.guard';
-import {CreateCampaignComponent} from './pages/create-campaign/create-campaign.component';
-import {CreateCampaignStepperComponent} from './components/create-campaign-stepper/create-campaign-stepper.component';
-import {CampaignBasicInfoComponent} from './components/campaign-basic-info/campaign-basic-info.component';
-import {CampaignDetailsComponent} from './components/campaign-details/campaign-details.component';
-import {CampaignSettingsComponent} from './components/campaign-settings/campaign-settings.component';
 
 const routes: Routes = [
   {
@@ -23,7 +19,15 @@ const routes: Routes = [
     children: [
       {path: '', redirectTo: 'home', pathMatch: 'full'},
       {path: 'home', component: DashboardHomeComponent},
-      {path: 'profile', component: UserProfileComponent}
+      {path: 'profile', component: UserProfileComponent},
+      {
+        path: 'campaigns',
+        loadChildren: () => import('./campaigns/campaigns.module').then(m => m.CampaignsModule)
+      },
+      // Add more feature modules as needed:
+      // { path: 'contributions', loadChildren: () => import('./contributions/contributions.module').then(m => m.ContributionsModule) },
+      // { path: 'pledges', loadChildren: () => import('./pledges/pledges.module').then(m => m.PledgesModule) },
+      // { path: 'settings', loadChildren: () => import('./settings/settings.module').then(m => m.SettingsModule) },
     ]
   }
 ];
@@ -31,20 +35,16 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     DashboardLayoutComponent,
-    DashboardHomeComponent,
     SidebarComponent,
     UserProfileComponent,
     HeaderComponent,
-    CreateCampaignComponent,
-    CreateCampaignStepperComponent,
-    CampaignBasicInfoComponent,
-    CampaignDetailsComponent,
-    CampaignSettingsComponent,
+    DashboardHomeComponent,
   ],
   imports: [
     CommonModule,
-    RouterModule.forChild(routes),
+    ReactiveFormsModule,
     SharedModule,
+    RouterModule.forChild(routes),
   ]
 })
 export class DashboardModule {

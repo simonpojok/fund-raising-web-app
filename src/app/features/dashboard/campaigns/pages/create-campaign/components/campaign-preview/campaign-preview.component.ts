@@ -1,22 +1,18 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-campaign-preview',
   templateUrl: './campaign-preview.component.html',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule
-  ]
+  standalone: false,
 })
 export class CampaignPreviewComponent implements OnInit {
   @Input() campaignData: any = {};
 
-  constructor() {}
+  constructor() {
+  }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+  }
 
   // Format currency
   formatCurrency(amount: number): string {

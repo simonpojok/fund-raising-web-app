@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {CreateCampaignService} from '../../services/create-campaign.service';
+import {CreateCampaignService} from './services/create-campaign.service';
 
 export interface CampaignFormData {
   basicInfo: any;
