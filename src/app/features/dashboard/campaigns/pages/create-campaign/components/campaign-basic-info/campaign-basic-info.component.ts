@@ -1,14 +1,16 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 @Component({
   selector: 'app-campaign-basic-info',
   templateUrl: './campaign-basic-info.component.html',
   standalone: false,
 })
-export class CampaignBasicInfoComponent implements OnInit {
+export class CampaignBasicInfoComponent implements OnInit, AfterViewInit {
   @Input() formGroup!: FormGroup;
   @Input() initialData: any = null;
+
+  @ViewChild('targetAmountInput') targetAmountInput!: ElementRef;
 
   constructor(private fb: FormBuilder) {
   }
@@ -17,6 +19,10 @@ export class CampaignBasicInfoComponent implements OnInit {
     this.setupForm();
     if (this.initialData) {
       this.formGroup.patchValue(this.initialData);
+      // Format the initial amount if it exists
+      if (this.initialData.targetAmount) {
+        this.updateAmountDisplay(this.initialData.targetAmount);
+      }
     }
   }
 
@@ -64,24 +70,44 @@ export class CampaignBasicInfoComponent implements OnInit {
     {value: 'Other', label: 'Other'}
   ];
 
-  // Format currency display
-  formatCurrency(value: string): string {
-    if (!value) return '';
-    const num = parseInt(value.replace(/[^\d]/g, ''));
+  // Format currency display with commas
+  formatCurrency(value: string | number): string {
+    if (!value) return '0';
+    const num = typeof value === 'string' ? parseInt(value.replace(/[^\d]/g, '')) : value;
     return new Intl.NumberFormat('en-UG').format(num);
   }
 
   // Handle amount input formatting
   onAmountInput(event: any): void {
     const input = event.target;
-    const value = input.value.replace(/[^\d]/g, '');
-    const formattedValue = this.formatCurrency(value);
+    let value = input.value.replace(/[^\d]/g, ''); // Remove all non-numeric characters
 
-    // Update the display
-    input.value = formattedValue;
+    if (value) {
+      // Format with commas for display
+      const formattedValue = this.formatCurrency(value);
+      input.value = formattedValue;
 
-    // Update the form control with the raw number
-    this.formGroup.get('targetAmount')?.setValue(value, {emitEvent: false});
+      // Update the form control with the raw number (without commas)
+      this.formGroup.get('targetAmount')?.setValue(value, {emitEvent: false});
+    } else {
+      // Clear both display and form control if empty
+      input.value = '';
+      this.formGroup.get('targetAmount')?.setValue('', {emitEvent: false});
+    }
+  }
+
+  ngAfterViewInit(): void {
+    // Format the initial amount if it exists
+    if (this.initialData?.targetAmount && this.targetAmountInput) {
+      this.updateAmountDisplay(this.initialData.targetAmount);
+    }
+  }
+
+  // Update amount display (for initial value setting)
+  updateAmountDisplay(value: string | number): void {
+    if (this.targetAmountInput) {
+      this.targetAmountInput.nativeElement.value = this.formatCurrency(value);
+    }
   }
 
   // Character count for description
@@ -94,8 +120,8 @@ export class CampaignBasicInfoComponent implements OnInit {
     const count = this.getDescriptionCount();
     const max = 1000;
 
-    if (count > max * 0.9) return 'text-danger';
-    if (count > max * 0.7) return 'text-warning';
+    if (count > max * 0.9) return 'text-danger-600';
+    if (count > max * 0.7) return 'text-warning-600';
     return 'text-gray-500 dark:text-gray-400';
   }
 }

@@ -159,7 +159,9 @@
         </div>
         <div class="ml-3">
           <label for="autoApproveInvitees"
-                 class="font-medium text-gray-900 dark:text-white"
+                 class="font-medium"
+                 [class.text-gray-900]="formGroup.get('isInvitationOnly')?.value"
+                 [class.dark:text-white]="formGroup.get('isInvitationOnly')?.value"
                  [class.text-gray-400]="!formGroup.get('isInvitationOnly')?.value"
                  [class.dark:text-gray-500]="!formGroup.get('isInvitationOnly')?.value">
             Auto-approve invitees
@@ -181,16 +183,16 @@
           Add at least one payment method for receiving contributions.
         </p>
       </div>
-      <app-button
+      <button
         type="button"
-        variant="outline"
-        (buttonClick)="addPaymentMethod()"
+        (click)="addPaymentMethod()"
+        class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
         </svg>
         Add Custom
-      </app-button>
+      </button>
     </div>
 
     <!-- Quick Add Buttons -->
@@ -217,16 +219,16 @@
         <div class="flex items-start justify-between">
           <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Payment Method Name -->
-            <div>
+            <div class="w-full mb-4">
               <label [for]="'payment-name-' + i" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Payment Method Name *
+                Payment Method Name <span class="text-danger ml-0.5">*</span>
               </label>
               <input
                 [id]="'payment-name-' + i"
                 type="text"
                 formControlName="name"
                 placeholder="e.g., MTN Mobile Money"
-                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-800 dark:text-white text-sm"
+                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-800 dark:text-white text-sm transition-colors duration-200"
                 [class.border-danger-500]="getPaymentMethodError(i, 'name')"
               >
               <div *ngIf="getPaymentMethodError(i, 'name')" class="mt-1 text-danger text-xs">
@@ -235,16 +237,16 @@
             </div>
 
             <!-- Account Details -->
-            <div>
+            <div class="w-full mb-4">
               <label [for]="'payment-number-' + i" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Account/Number Details *
+                Account/Number Details <span class="text-danger ml-0.5">*</span>
               </label>
               <input
                 [id]="'payment-number-' + i"
                 type="text"
                 formControlName="number"
                 placeholder="Enter account number or details"
-                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-800 dark:text-white text-sm"
+                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-800 dark:text-white text-sm transition-colors duration-200"
                 [class.border-danger-500]="getPaymentMethodError(i, 'number')"
               >
               <div *ngIf="getPaymentMethodError(i, 'number')" class="mt-1 text-danger text-xs">

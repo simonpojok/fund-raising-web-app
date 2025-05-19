@@ -1,32 +1,38 @@
 <div [formGroup]="formGroup" class="space-y-6">
 
   <!-- Campaign Title -->
-  <div>
-    <app-input
-      label="Campaign Title"
+  <div class="w-full mb-4">
+    <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+      Campaign Title <span class="text-danger ml-0.5">*</span>
+    </label>
+    <input
       type="text"
+      id="title"
       formControlName="title"
       placeholder="Enter a compelling title for your campaign"
-      [required]="true"
-      [validationMessages]="{
-        required: 'Campaign title is required',
-        minlength: 'Title must be at least 5 characters',
-        maxlength: 'Title cannot exceed 100 characters'
-      }"
-      helperText="Make it clear and compelling to attract supporters"
-    ></app-input>
+      class="block w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50 dark:bg-gray-800 dark:text-white transition-colors duration-200"
+      [class.border-danger-500]="formGroup.get('title')?.invalid && (formGroup.get('title')?.dirty || formGroup.get('title')?.touched)"
+    >
+    <div *ngIf="formGroup.get('title')?.invalid && (formGroup.get('title')?.dirty || formGroup.get('title')?.touched)" class="mt-1 text-danger text-sm">
+      <span *ngIf="formGroup.get('title')?.errors?.['required']">Campaign title is required</span>
+      <span *ngIf="formGroup.get('title')?.errors?.['minlength']">Title must be at least 5 characters</span>
+      <span *ngIf="formGroup.get('title')?.errors?.['maxlength']">Title cannot exceed 100 characters</span>
+    </div>
+    <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+      Make it clear and compelling to attract supporters
+    </div>
   </div>
 
   <!-- Campaign Description -->
-  <div>
-    <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-      Description *
+  <div class="w-full mb-4">
+    <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+      Description <span class="text-danger ml-0.5">*</span>
     </label>
     <textarea
       id="description"
       formControlName="description"
       rows="5"
-      class="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50 dark:bg-gray-800 dark:text-white transition-colors duration-200"
+      class="block w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50 dark:bg-gray-800 dark:text-white transition-colors duration-200"
       [class.border-danger-500]="formGroup.get('description')?.invalid && (formGroup.get('description')?.dirty || formGroup.get('description')?.touched)"
       placeholder="Tell your story. Explain why this campaign matters and how contributions will be used."
     ></textarea>
@@ -50,32 +56,39 @@
   </div>
 
   <!-- Beneficiary -->
-  <div>
-    <app-input
-      label="Beneficiary"
+  <div class="w-full mb-4">
+    <label for="beneficiary" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+      Beneficiary <span class="text-danger ml-0.5">*</span>
+    </label>
+    <input
       type="text"
+      id="beneficiary"
       formControlName="beneficiary"
       placeholder="Who will benefit from this campaign?"
-      [required]="true"
-      [validationMessages]="{
-        required: 'Beneficiary is required',
-        maxlength: 'Beneficiary name cannot exceed 100 characters'
-      }"
-      helperText="e.g., John Doe, St. Mary's School, Kampala Community"
-    ></app-input>
+      class="block w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50 dark:bg-gray-800 dark:text-white transition-colors duration-200"
+      [class.border-danger-500]="formGroup.get('beneficiary')?.invalid && (formGroup.get('beneficiary')?.dirty || formGroup.get('beneficiary')?.touched)"
+    >
+    <div *ngIf="formGroup.get('beneficiary')?.invalid && (formGroup.get('beneficiary')?.dirty || formGroup.get('beneficiary')?.touched)" class="mt-1 text-danger text-sm">
+      <span *ngIf="formGroup.get('beneficiary')?.errors?.['required']">Beneficiary is required</span>
+      <span *ngIf="formGroup.get('beneficiary')?.errors?.['maxlength']">Beneficiary name cannot exceed 100 characters</span>
+    </div>
+    <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+      e.g., John Doe, St. Mary's School, Kampala Community
+    </div>
   </div>
 
   <!-- Target Amount -->
-  <div>
-    <label for="targetAmount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-      Target Amount (UGX) *
+  <div class="w-full mb-4">
+    <label for="targetAmount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+      Target Amount (UGX) <span class="text-danger ml-0.5">*</span>
     </label>
     <input
       type="text"
       id="targetAmount"
+      #targetAmountInput
       formControlName="targetAmount"
       (input)="onAmountInput($event)"
-      class="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50 dark:bg-gray-800 dark:text-white transition-colors duration-200"
+      class="block w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50 dark:bg-gray-800 dark:text-white transition-colors duration-200"
       [class.border-danger-500]="formGroup.get('targetAmount')?.invalid && (formGroup.get('targetAmount')?.dirty || formGroup.get('targetAmount')?.touched)"
       placeholder="Enter target amount"
     >
@@ -87,7 +100,7 @@
       <span *ngIf="formGroup.get('targetAmount')?.errors?.['pattern']">Please enter a valid amount</span>
     </div>
 
-    <div class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+    <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
       Set a realistic goal that covers your needs but is achievable
     </div>
   </div>
@@ -95,14 +108,14 @@
   <!-- Category and Urgency Row -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <!-- Category -->
-    <div>
-      <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-        Category *
+    <div class="w-full mb-4">
+      <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        Category <span class="text-danger ml-0.5">*</span>
       </label>
       <select
         id="category"
         formControlName="category"
-        class="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50 dark:bg-gray-800 dark:text-white transition-colors duration-200"
+        class="block w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50 dark:bg-gray-800 dark:text-white transition-colors duration-200"
         [class.border-danger-500]="formGroup.get('category')?.invalid && (formGroup.get('category')?.dirty || formGroup.get('category')?.touched)"
       >
         <option value="">Select a category</option>
@@ -114,13 +127,13 @@
         <span *ngIf="formGroup.get('category')?.errors?.['required']">Category is required</span>
       </div>
 
-      <div class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+      <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
         Help people find your campaign by selecting the right category
       </div>
     </div>
 
     <!-- Urgent Flag -->
-    <div>
+    <div class="w-full mb-4">
       <div class="flex items-start">
         <div class="flex items-center h-5">
           <input
