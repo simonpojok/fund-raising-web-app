@@ -1,12 +1,12 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {environment} from '../../../../../../../environments/environment';
-import {CreateCampaignRequest} from '../interfaces/create-campaign-request.interface';
-import {ISupportCampaignCategory} from '../interfaces/support_category.interface';
-import {ISupportedPaymentMethod} from '../interfaces/supported_payment_method.interface';
-import {IGetSupportCategoryResponse} from '../interfaces/get-support-category-response.interface';
-import {GetPaymentMethodsResponseInterface} from '../interfaces/get-payment-methods-response.interface';
+import {environment} from '../../../../../environments/environment';
+import {CreateCampaignRequest} from '../pages/create-campaign/interfaces/create-campaign-request.interface';
+import {ISupportCampaignCategory} from '../pages/create-campaign/interfaces/support_category.interface';
+import {ISupportedPaymentMethod} from '../pages/create-campaign/interfaces/supported_payment_method.interface';
+import {IGetSupportCategoryResponse} from '../pages/create-campaign/interfaces/get-support-category-response.interface';
+import {GetPaymentMethodsResponseInterface} from '../pages/create-campaign/interfaces/get-payment-methods-response.interface';
 
 @Injectable({
   providedIn: 'root'

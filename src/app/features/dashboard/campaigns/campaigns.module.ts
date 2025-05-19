@@ -12,13 +12,21 @@ import {
   SettingsPaymentCardComponent
 } from './pages/create-campaign/components/settings-payment-card/settings-payment-card.component';
 import {CreateCampaignComponent} from './pages/create-campaign/create-campaign.component';
-import {CreateCampaignService} from './pages/create-campaign/services/create-campaign.service';
+import {CreateCampaignService} from './services/create-campaign.service';
+import {CampaignsFiltersComponent} from './components/campaigns-filters/campaigns-filters.component';
+import {CampaignsGridComponent} from './components/campaigns-grid/campaigns-grid.component';
+import {CampaignsListComponent} from './pages/campaigns-list/campaigns-list.component';
 
 const routes: Routes = [
   {
     path: '',
     canActivate: [authGuard],
     children: [
+      {
+        path: '',
+        component: CampaignsListComponent,
+        data: {title: 'All Campaigns'}
+      },
       {path: 'create', component: CreateCampaignComponent},
       // Future routes:
       // { path: ':id', component: e },
@@ -34,6 +42,9 @@ const routes: Routes = [
     CreateCampaignComponent,
     BasicInfoCardComponent,
     SettingsPaymentCardComponent,
+    CampaignsFiltersComponent,
+    CampaignsGridComponent,
+    CampaignsListComponent,
   ],
   imports: [
     CommonModule,

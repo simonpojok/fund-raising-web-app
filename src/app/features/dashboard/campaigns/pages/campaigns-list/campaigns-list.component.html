@@ -1,0 +1,278 @@
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+  <!-- Header Section -->
+  <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <div class="mb-4 sm:mb-0">
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-white">All Campaigns</h1>
+          <p class="mt-2 text-gray-600 dark:text-gray-300">
+            Discover and support amazing fundraising campaigns
+          </p>
+        </div>
+
+        <!-- Header Actions -->
+        <div class="flex items-center space-x-3">
+          <!-- Create Campaign Button -->
+          <button
+            type="button"
+            routerLink="/dashboard/campaigns/create"
+            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+            Create Campaign
+          </button>
+
+          <!-- View Toggle -->
+          <div class="hidden sm:flex items-center space-x-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+            <button
+              type="button"
+              (click)="viewMode = 'grid'; updateUrl()"
+              [class]="viewMode === 'grid'
+                ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
+              class="p-2 rounded-md transition-colors"
+              title="Grid View"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                   stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+              </svg>
+            </button>
+            <button
+              type="button"
+              (click)="viewMode = 'list'; updateUrl()"
+              [class]="viewMode === 'list'
+                ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
+              class="p-2 rounded-md transition-colors"
+              title="List View"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                   stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Refresh Button -->
+          <button
+            type="button"
+            (click)="refreshCampaigns()"
+            [disabled]="loading"
+            class="inline-flex items-center p-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors disabled:opacity-50"
+            title="Refresh Campaigns"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              [class.animate-spin]="loading"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats Bar -->
+      <div *ngIf="campaigns.length > 0" class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+          <div class="flex items-center">
+            <div class="p-2 bg-blue-500 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
+                   stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+              </svg>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-blue-600 dark:text-blue-400">Total Campaigns</p>
+              <p class="text-2xl font-semibold text-blue-900 dark:text-blue-100">{{ formatNumber(totalCount) }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
+          <div class="flex items-center">
+            <div class="p-2 bg-green-500 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
+                   stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-green-600 dark:text-green-400">Total Raised</p>
+              <p
+                class="text-2xl font-semibold text-green-900 dark:text-green-100">{{ formatCurrency(getTotalRaised()) }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4">
+          <div class="flex items-center">
+            <div class="p-2 bg-purple-500 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
+                   stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+              </svg>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-purple-600 dark:text-purple-400">Contributors</p>
+              <p
+                class="text-2xl font-semibold text-purple-900 dark:text-purple-100">{{ formatNumber(getTotalContributors()) }}
+                +</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <app-campaigns-filters
+    [categories]="categories"
+    [loadingCategories]="loadingCategories"
+    [currentFilters]="currentFilters"
+    (filtersChange)="onFiltersChange($event)"
+    (searchChange)="onSearchChange($event)"
+    (clearFilters)="onClearFilters()"
+  ></app-campaigns-filters>
+
+  <!-- Active Filters Display -->
+  <div *ngIf="getActiveFiltersCount() > 0"
+       class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 sm:px-6 lg:px-8 py-3">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <span class="text-sm text-gray-600 dark:text-gray-400 mr-2">Active filters:</span>
+          <span
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200">
+            {{ getActiveFiltersCount() }} applied
+          </span>
+        </div>
+        <button
+          type="button"
+          (click)="clearAllFilters()"
+          class="text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium transition-colors"
+        >
+          Clear all filters
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage"
+       class="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-400 p-4 mx-4 sm:mx-6 lg:mx-8 mt-4">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24"
+             stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+        </svg>
+      </div>
+      <div class="ml-3">
+        <p class="text-sm text-red-700 dark:text-red-200">{{ errorMessage }}</p>
+        <div class="mt-2">
+          <button
+            type="button"
+            (click)="refreshCampaigns()"
+            class="text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300 transition-colors"
+          >
+            Try again
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Mobile View Controls -->
+    <div class="sm:hidden mb-6 flex justify-between items-center">
+      <div class="flex items-center space-x-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+        <button
+          type="button"
+          (click)="viewMode = 'grid'; updateUrl()"
+          [class]="viewMode === 'grid'
+            ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
+            : 'text-gray-500 dark:text-gray-400'"
+          class="p-2 rounded-md transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+          </svg>
+        </button>
+        <button
+          type="button"
+          (click)="viewMode = 'list'; updateUrl()"
+          [class]="viewMode === 'list'
+            ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
+            : 'text-gray-500 dark:text-gray-400'"
+          class="p-2 rounded-md transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+
+      <span class="text-sm text-gray-600 dark:text-gray-400">
+        {{ campaigns.length }} of {{ totalCount }} campaigns
+      </span>
+    </div>
+
+    <!-- Campaigns Grid -->
+    <app-campaigns-grid
+      [campaigns]="campaigns"
+      [loading]="loading"
+      [viewMode]="viewMode"
+      [showActions]="true"
+      [currentUserId]="currentUser?.id || null"
+      (campaignAction)="onCampaignAction($event)"
+      (loadMore)="onLoadMore()"
+    ></app-campaigns-grid>
+
+    <!-- Results Summary -->
+    <div *ngIf="!loading && campaigns.length > 0" class="mt-8 text-center">
+      <p class="text-sm text-gray-600 dark:text-gray-400">
+        Showing {{ campaigns.length }} of {{ totalCount }} campaigns
+        <span *ngIf="hasMore">
+          •
+          <button
+            type="button"
+            (click)="onLoadMore()"
+            class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium transition-colors"
+          >
+            Load more
+          </button>
+        </span>
+      </p>
+    </div>
+  </div>
+
+  <!-- Floating Action Button (Mobile) -->
+  <div class="fixed bottom-6 right-6 sm:hidden">
+    <button
+      type="button"
+      routerLink="/dashboard/campaigns/create"
+      class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary-600 text-white shadow-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200 hover:scale-110"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+      </svg>
+    </button>
+  </div>
+</div>

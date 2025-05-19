@@ -1,0 +1,168 @@
+/* Page container styling */
+.campaigns-page {
+  min-height: 100vh;
+  @apply bg-gray-50 dark:bg-gray-900;
+}
+
+/* Header section styling */
+.header-section {
+  @apply bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Stats cards animations */
+.stats-card {
+  @apply transition-all duration-300 ease-in-out;
+  @apply hover:transform hover:-translate-y-1 hover:shadow-lg;
+}
+
+.stats-card .stats-icon {
+  @apply transition-transform duration-300;
+}
+
+.stats-card:hover .stats-icon {
+  @apply transform scale-110;
+}
+
+/* View toggle buttons */
+.view-toggle {
+  @apply transition-all duration-200 ease-in-out;
+}
+
+.view-toggle button {
+  @apply transition-all duration-200;
+}
+
+.view-toggle button:hover {
+  @apply transform scale-105;
+}
+
+.view-toggle button.active {
+  @apply shadow-sm;
+}
+
+/* Filter section styling */
+.filters-section {
+  @apply transition-all duration-300 ease-in-out;
+  backdrop-filter: blur(10px);
+}
+
+/* Active filters display */
+.active-filters {
+  @apply bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400;
+  animation: slideInDown 0.3s ease-out;
+}
+
+.active-filters .filter-count {
+  @apply animate-pulse;
+}
+
+/* Error message styling */
+.error-message {
+  @apply border-l-4 border-red-400;
+  animation: shake 0.5s ease-in-out;
+}
+
+/* Mobile controls */
+.mobile-controls {
+  @apply transition-all duration-200;
+}
+
+/* Results summary */
+.results-summary {
+  @apply transition-opacity duration-300;
+}
+
+.results-summary button {
+  @apply transition-all duration-200;
+}
+
+.results-summary button:hover {
+  @apply transform scale-105;
+}
+
+/* Floating action button */
+.fab {
+  @apply transition-all duration-300 ease-in-out;
+  @apply hover:transform hover:scale-110 hover:shadow-xl;
+  animation: bounceIn 0.5s ease-out;
+}
+
+.fab:active {
+  @apply transform scale-95;
+}
+
+/* Loading states */
+.loading-overlay {
+  @apply bg-white dark:bg-gray-800 opacity-75;
+  backdrop-filter: blur(4px);
+}
+
+.loading-spinner {
+  @apply text-primary-600 dark:text-primary-400;
+  animation: spin 1s linear infinite;
+}
+
+/* Responsive grid adjustments */
+@media (max-width: 640px) {
+  .stats-grid {
+    @apply grid-cols-1 gap-4;
+  }
+
+  .header-actions {
+    @apply flex-col space-y-3;
+  }
+
+  .mobile-controls {
+    @apply px-4;
+  }
+}
+
+/* Dark mode specific adjustments */
+@media (prefers-color-scheme: dark) {
+  .header-section {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  .stats-card:hover {
+    box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* Animations */
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+  20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

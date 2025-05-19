@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CreateCampaignService } from './services/create-campaign.service';
+import { CreateCampaignService } from '../../services/create-campaign.service';
 import { AuthService } from '../../../../../core/services';
 import { ISupportCampaignCategory } from './interfaces/support_category.interface';
 import { ISupportedPaymentMethod } from './interfaces/supported_payment_method.interface';
