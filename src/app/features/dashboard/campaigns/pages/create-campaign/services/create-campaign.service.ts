@@ -2,33 +2,27 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable, of, delay} from 'rxjs';
 import {environment} from '../../../../../../../environments/environment';
+import {ICampaignPaymentMethod} from '../interfaces/campaign_payment_method.interface';
 
 export interface CreateCampaignRequest {
   title: string;
   description: string;
-  beneficiary: string;
-  targetAmount: number;
+  end_date: string;
+  coordinator: string;
+  target_amount: number;
   category: string;
-  isUrgent: boolean;
-  eventDate: string;
-  location: string;
-  massDetails?: string;
-  celebrant?: string;
-  coordinatorName: string;
-  coordinatorEmail: string;
-  coordinatorPhone: string;
-  isPublic: boolean;
-  allowAnonymousContributions: boolean;
-  includePledges: boolean;
-  sendThankYouMessages: boolean;
-  allowComments: boolean;
-  isInvitationOnly: boolean;
-  autoApproveInvitees: boolean;
-  paymentMethods: Array<{
-    name: string;
-    number: string;
-  }>;
-  isDraft?: boolean;
+  is_urgent: boolean;
+  is_public: boolean;
+  include_pledges: boolean;
+  allow_anonymous_contributions: boolean;
+  send_thank_you_messages: boolean;
+  allow_comments: boolean;
+  is_invitation_only: boolean;
+  auto_approve_invitees: boolean;
+  payment_methods: Array<ICampaignPaymentMethod>;
+  is_published: boolean;
+  banner: File,
+  video: File,
 }
 
 export interface CampaignResponse {
@@ -97,10 +91,10 @@ export class CreateCampaignService {
     }
 
     // Event details validation
-    if (!campaignData.eventDate) {
+    if (!campaignData.end_date) {
       errors.push('Event date is required');
     } else {
-      const eventDate = new Date(campaignData.eventDate);
+      const eventDate = new Date(campaignData.end_date);
       const today = new Date();
       if (eventDate <= today) {
         errors.push('Event date must be in the future');

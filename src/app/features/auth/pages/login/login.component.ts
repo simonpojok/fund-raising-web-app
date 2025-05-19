@@ -13,6 +13,7 @@ export class LoginComponent implements OnInit {
   isLoading = false;
   errorMessage = '';
   returnUrl = '/dashboard';
+  showPassword = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -75,4 +76,8 @@ export class LoginComponent implements OnInit {
 
   // Getter for easy access to form fields
   get f() { return this.loginForm.controls; }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
 }
