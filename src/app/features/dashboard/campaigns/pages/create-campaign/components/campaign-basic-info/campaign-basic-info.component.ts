@@ -22,7 +22,8 @@ export class CampaignBasicInfoComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private createCampaignService: CreateCampaignService
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.setupForm();
@@ -68,23 +69,13 @@ export class CampaignBasicInfoComponent implements OnInit {
   loadCategories(): void {
     this.loadingCategories = true;
     this.createCampaignService.getCampaignCategories().subscribe({
-      next: (categories) => {
-        this.categories = categories;
+      next: (response) => {
+        this.categories = response.results;
         this.loadingCategories = false;
       },
       error: (error) => {
         console.error('Error loading categories:', error);
         this.loadingCategories = false;
-        // Fallback to default categories
-        this.categories = [
-          { id: 'education', name: 'Education', description: 'Educational campaigns' },
-          { id: 'healthcare', name: 'Healthcare', description: 'Health and medical campaigns' },
-          { id: 'community', name: 'Community Project', description: 'Community development' },
-          { id: 'religious', name: 'Religious', description: 'Religious activities' },
-          { id: 'personal', name: 'Personal', description: 'Personal fundraising' },
-          { id: 'emergency', name: 'Emergency', description: 'Emergency and disaster relief' },
-          { id: 'other', name: 'Other', description: 'Other purposes' }
-        ];
       }
     });
   }
@@ -92,7 +83,7 @@ export class CampaignBasicInfoComponent implements OnInit {
   numberValidator(control: any) {
     const value = control.value;
     if (value && isNaN(Number(value))) {
-      return { invalidNumber: true };
+      return {invalidNumber: true};
     }
     return null;
   }
@@ -111,10 +102,10 @@ export class CampaignBasicInfoComponent implements OnInit {
 
     if (value) {
       input.value = this.formatCurrency(value);
-      this.formGroup.get('target_amount')?.setValue(Number(value), { emitEvent: false });
+      this.formGroup.get('target_amount')?.setValue(Number(value), {emitEvent: false});
     } else {
       input.value = '';
-      this.formGroup.get('target_amount')?.setValue(null, { emitEvent: false });
+      this.formGroup.get('target_amount')?.setValue(null, {emitEvent: false});
     }
   }
 
