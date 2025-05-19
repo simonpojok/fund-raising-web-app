@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormArray, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CreateCampaignService } from '../../services/create-campaign.service';
-import {ICampaignPaymentMethod} from '../../interfaces/campaign_payment_method.interface';
-import {ISupportedPaymentMethod} from '../../interfaces/supported_payment_method.interface';
+import { ICampaignPaymentMethod } from '../../interfaces/campaign_payment_method.interface';
+import { ISupportedPaymentMethod } from '../../interfaces/supported_payment_method.interface';
 
 @Component({
   selector: 'app-campaign-settings',
@@ -45,8 +45,9 @@ export class CampaignSettingsComponent implements OnInit {
     // Set default value for is_published (will be set when creating campaign)
     this.formGroup.addControl('is_published', this.fb.control(true));
 
-    // Payment methods
-    this.formGroup.addControl('payment_methods', this.fb.array([], [this.atLeastOnePaymentMethodValidator()]));
+    // Payment methods - create FormArray with custom validator
+    const paymentMethodsArray = this.fb.array([], this.atLeastOnePaymentMethodValidator);
+    this.formGroup.addControl('payment_methods', paymentMethodsArray);
   }
 
   loadSupportedPaymentMethods(): void {
@@ -91,8 +92,18 @@ export class CampaignSettingsComponent implements OnInit {
     });
   }
 
-  addPaymentMethod(paymentMethodId?: string): void {
-    const newMethod = this.createPaymentMethodGroup(paymentMethodId || '');
+  addPaymentMethod(): void {
+    const newMethod = this.createPaymentMethodGroup();
+    this.paymentMethodsArray.push(newMethod);
+  }
+
+  addPredefinedPaymentMethod(paymentMethod: ISupportedPaymentMethod): void {
+    // Check if this payment method is already added
+    if (this.isPaymentMethodAdded(paymentMethod.id)) {
+      return;
+    }
+
+    const newMethod = this.createPaymentMethodGroup(paymentMethod.id);
     this.paymentMethodsArray.push(newMethod);
   }
 
@@ -101,9 +112,10 @@ export class CampaignSettingsComponent implements OnInit {
   }
 
   // Custom validator to ensure at least one payment method
-  atLeastOnePaymentMethodValidator(control: FormArray) {
-    return control.length >= 1 ? null : { atLeastOnePaymentMethod: true };
-  }
+  atLeastOnePaymentMethodValidator = (control: AbstractControl): ValidationErrors | null => {
+    const formArray = control as FormArray;
+    return formArray.length >= 1 ? null : { atLeastOnePaymentMethod: true };
+  };
 
   // Get validation status for payment methods
   isPaymentMethodsValid(): boolean {
@@ -160,5 +172,17 @@ export class CampaignSettingsComponent implements OnInit {
   // Check if payment method type is already added
   isPaymentMethodAdded(methodId: string): boolean {
     return this.paymentMethodsArray.value.some((method: ICampaignPaymentMethod) => method.id === methodId);
+  }
+
+  getFileSize(file: File): string {
+    const bytes = file.size;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+
+    if (bytes === 0) return '0 Bytes';
+
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    const size = bytes / Math.pow(1024, i);
+
+    return Math.round(size * 100) / 100 + ' ' + sizes[i];
   }
 }

@@ -11,7 +11,7 @@
           <input
             id="isPublic"
             type="checkbox"
-            formControlName="isPublic"
+            formControlName="is_public"
             class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
           >
         </div>
@@ -30,7 +30,7 @@
           <input
             id="isInvitationOnly"
             type="checkbox"
-            formControlName="isInvitationOnly"
+            formControlName="is_invitation_only"
             class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
           >
         </div>
@@ -69,7 +69,7 @@
           <input
             id="allowAnonymousContributions"
             type="checkbox"
-            formControlName="allowAnonymousContributions"
+            formControlName="allow_anonymous_contributions"
             class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
           >
         </div>
@@ -88,7 +88,7 @@
           <input
             id="includePledges"
             type="checkbox"
-            formControlName="includePledges"
+            formControlName="include_pledges"
             class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
           >
         </div>
@@ -107,7 +107,7 @@
           <input
             id="allowComments"
             type="checkbox"
-            formControlName="allowComments"
+            formControlName="allow_comments"
             class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
           >
         </div>
@@ -133,7 +133,7 @@
           <input
             id="sendThankYouMessages"
             type="checkbox"
-            formControlName="sendThankYouMessages"
+            formControlName="send_thank_you_messages"
             class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
           >
         </div>
@@ -152,18 +152,18 @@
           <input
             id="autoApproveInvitees"
             type="checkbox"
-            formControlName="autoApproveInvitees"
+            formControlName="auto_approve_invitees"
             class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-            [disabled]="!formGroup.get('isInvitationOnly')?.value"
+            [disabled]="!formGroup.get('is_invitation_only')?.value"
           >
         </div>
         <div class="ml-3">
           <label for="autoApproveInvitees"
                  class="font-medium"
-                 [class.text-gray-900]="formGroup.get('isInvitationOnly')?.value"
-                 [class.dark:text-white]="formGroup.get('isInvitationOnly')?.value"
-                 [class.text-gray-400]="!formGroup.get('isInvitationOnly')?.value"
-                 [class.dark:text-gray-500]="!formGroup.get('isInvitationOnly')?.value">
+                 [class.text-gray-900]="formGroup.get('is_invitation_only')?.value"
+                 [class.dark:text-white]="formGroup.get('is_invitation_only')?.value"
+                 [class.text-gray-400]="!formGroup.get('is_invitation_only')?.value"
+                 [class.dark:text-gray-500]="!formGroup.get('is_invitation_only')?.value">
             Auto-approve invitees
           </label>
           <p class="text-sm text-gray-600 dark:text-gray-300">
@@ -198,15 +198,24 @@
     <!-- Quick Add Buttons -->
     <div class="mb-6">
       <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Quick Add:</p>
-      <div class="flex flex-wrap gap-2">
+      <div *ngIf="loadingPaymentMethods" class="flex justify-center">
+        <div class="inline-block h-5 w-5 animate-spin rounded-full border-4 border-solid border-primary-600 border-r-transparent"></div>
+      </div>
+      <div *ngIf="!loadingPaymentMethods" class="flex flex-wrap gap-2">
         <button
-          *ngFor="let method of predefinedPaymentMethods"
+          *ngFor="let method of supportedPaymentMethods"
           type="button"
           (click)="addPredefinedPaymentMethod(method)"
-          class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
+          [disabled]="isPaymentMethodAdded(method.id)"
+          class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white dark:disabled:hover:bg-gray-700"
+          [title]="method.description"
         >
           {{ method.name }}
+          <span *ngIf="isPaymentMethodAdded(method.id)" class="ml-1 text-green-600">✓</span>
         </button>
+      </div>
+      <div *ngIf="!loadingPaymentMethods && supportedPaymentMethods.length === 0" class="text-gray-500 dark:text-gray-400 text-sm">
+        No payment methods available
       </div>
     </div>
 
@@ -217,40 +226,61 @@
            class="p-4 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700">
 
         <div class="flex items-start justify-between">
-          <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Payment Method Name -->
+          <div class="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Payment Method Type -->
             <div class="w-full mb-4">
-              <label [for]="'payment-name-' + i" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Payment Method Name <span class="text-danger ml-0.5">*</span>
+              <label [for]="'payment-type-' + i" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Payment Method <span class="text-danger ml-0.5">*</span>
               </label>
-              <input
-                [id]="'payment-name-' + i"
-                type="text"
-                formControlName="name"
-                placeholder="e.g., MTN Mobile Money"
+              <select
+                [id]="'payment-type-' + i"
+                formControlName="id"
                 class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-800 dark:text-white text-sm transition-colors duration-200"
-                [class.border-danger-500]="getPaymentMethodError(i, 'name')"
+                [class.border-danger-500]="getPaymentMethodError(i, 'id')"
               >
-              <div *ngIf="getPaymentMethodError(i, 'name')" class="mt-1 text-danger text-xs">
-                {{ getPaymentMethodError(i, 'name') }}
+                <option value="">Select payment method</option>
+                <option *ngFor="let method of supportedPaymentMethods" [value]="method.id">
+                  {{ method.name }}
+                </option>
+              </select>
+              <div *ngIf="getPaymentMethodError(i, 'id')" class="mt-1 text-danger text-xs">
+                {{ getPaymentMethodError(i, 'id') }}
               </div>
             </div>
 
-            <!-- Account Details -->
+            <!-- Account Name -->
             <div class="w-full mb-4">
-              <label [for]="'payment-number-' + i" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Account/Number Details <span class="text-danger ml-0.5">*</span>
+              <label [for]="'payment-account-name-' + i" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Account Name <span class="text-danger ml-0.5">*</span>
               </label>
               <input
-                [id]="'payment-number-' + i"
+                [id]="'payment-account-name-' + i"
                 type="text"
-                formControlName="number"
-                placeholder="Enter account number or details"
+                formControlName="account_name"
+                placeholder="e.g., John Doe"
                 class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-800 dark:text-white text-sm transition-colors duration-200"
-                [class.border-danger-500]="getPaymentMethodError(i, 'number')"
+                [class.border-danger-500]="getPaymentMethodError(i, 'account_name')"
               >
-              <div *ngIf="getPaymentMethodError(i, 'number')" class="mt-1 text-danger text-xs">
-                {{ getPaymentMethodError(i, 'number') }}
+              <div *ngIf="getPaymentMethodError(i, 'account_name')" class="mt-1 text-danger text-xs">
+                {{ getPaymentMethodError(i, 'account_name') }}
+              </div>
+            </div>
+
+            <!-- Account Number -->
+            <div class="w-full mb-4">
+              <label [for]="'payment-account-number-' + i" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Account Number <span class="text-danger ml-0.5">*</span>
+              </label>
+              <input
+                [id]="'payment-account-number-' + i"
+                type="text"
+                formControlName="account_number"
+                placeholder="Enter account number"
+                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-800 dark:text-white text-sm transition-colors duration-200"
+                [class.border-danger-500]="getPaymentMethodError(i, 'account_number')"
+              >
+              <div *ngIf="getPaymentMethodError(i, 'account_number')" class="mt-1 text-danger text-xs">
+                {{ getPaymentMethodError(i, 'account_number') }}
               </div>
             </div>
           </div>
@@ -266,6 +296,18 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
           </button>
+        </div>
+
+        <!-- Show selected payment method info -->
+        <div *ngIf="paymentMethod.get('id')?.value" class="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
+          <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600 dark:text-blue-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="text-blue-800 dark:text-blue-200 text-sm">
+              {{ getPaymentMethodName(paymentMethod.get('id')?.value) }}
+            </span>
+          </div>
         </div>
       </div>
     </div>
