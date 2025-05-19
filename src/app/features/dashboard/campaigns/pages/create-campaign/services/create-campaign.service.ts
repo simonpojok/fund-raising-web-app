@@ -44,27 +44,15 @@ export interface CampaignResponse {
   providedIn: 'root'
 })
 export class CreateCampaignService {
-  private readonly apiUrl = `${environment.apiUrl}/campaigns`;
+  private readonly apiUrl = `${environment.apiUrl}/campaigns/`;
 
   constructor(private http: HttpClient) {
   }
 
   // Create a new campaign
   createCampaign(campaignData: CreateCampaignRequest): Observable<CampaignResponse> {
-    // Mock implementation - replace with actual API call
-    const mockResponse: CampaignResponse = {
-      id: `campaign-${Date.now()}`,
-      title: campaignData.title,
-      description: campaignData.description,
-      targetAmount: campaignData.targetAmount,
-      createdAt: new Date().toISOString(),
-      isDraft: false
-    };
-
-    return of(mockResponse).pipe(delay(1500));
-
-    // Real implementation would be:
-    // return this.http.post<CampaignResponse>(this.apiUrl, campaignData);
+    console.log(campaignData);
+    return this.http.post<CampaignResponse>(this.apiUrl, campaignData);
   }
 
   // Save campaign as draft
