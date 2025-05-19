@@ -5,13 +5,19 @@ import {ReactiveFormsModule} from '@angular/forms';
 
 import {SharedModule} from '../../../shared/shared.module';
 import {
-  CampaignBasicInfoComponent,
-  CampaignDetailsComponent,
-  CampaignPreviewComponent, CampaignSettingsComponent,
-  CreateCampaignComponent, CreateCampaignStepperComponent
+  CreateCampaignComponent
 } from './pages/create-campaign';
 import {CreateCampaignService} from './pages/create-campaign';
 import {authGuard} from '../../../core/guards/auth.guard';
+import {
+  BasicInfoCardComponent
+} from './pages/create-campaign/components/basic-info-card/basic-info-card.component';
+import {
+  CampaignPreviewCardComponent
+} from './pages/create-campaign/components/campaign-preview-card/campaign-preview-card.component';
+import {
+  SettingsPaymentCardComponent
+} from './pages/create-campaign/components/settings-payment-card/settings-payment-card.component';
 
 const routes: Routes = [
   {
@@ -31,12 +37,9 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     CreateCampaignComponent,
-    CampaignBasicInfoComponent,
-    CampaignDetailsComponent,
-    CampaignPreviewComponent,
-    CampaignSettingsComponent,
-    CreateCampaignStepperComponent,
-    CreateCampaignComponent
+    BasicInfoCardComponent,
+    CampaignPreviewCardComponent,
+    SettingsPaymentCardComponent,
   ],
   imports: [
     CommonModule,

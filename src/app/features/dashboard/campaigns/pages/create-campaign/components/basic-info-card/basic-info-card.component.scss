@@ -1,0 +1,106 @@
+/* Basic Info Card Styles */
+.form-group {
+  @apply transition-all duration-200 ease-in-out;
+}
+
+.form-group:hover {
+  @apply transform translate-y-0;
+}
+
+/* File upload styling */
+.file-upload-area {
+  @apply transition-all duration-300 ease-in-out border-2 border-dashed;
+}
+
+.file-upload-area:hover {
+  @apply border-primary-400 bg-primary-50 dark:border-primary-500 dark:bg-primary-900/20;
+}
+
+.file-upload-area:focus-within {
+  @apply border-primary-500 bg-primary-50 dark:border-primary-400 dark:bg-primary-900/30;
+}
+
+/* Input focus effects */
+input:focus,
+textarea:focus,
+select:focus {
+  @apply transform translate-y-0 scale-100;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Character counter animation */
+.character-counter {
+  @apply transition-colors duration-200;
+}
+
+/* Date picker styling */
+input[type="date"] {
+  @apply relative;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  @apply absolute right-3 text-gray-400 hover:text-primary-600 transition-colors cursor-pointer;
+}
+
+/* Media preview styling */
+.media-preview {
+  @apply relative overflow-hidden rounded-lg;
+}
+
+.media-preview img,
+.media-preview video {
+  @apply transition-transform duration-300 hover:scale-105;
+}
+
+.media-preview-overlay {
+  @apply absolute inset-0 bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 flex items-center justify-center;
+}
+
+.media-preview:hover .media-preview-overlay {
+  @apply opacity-100;
+}
+
+/* Checkbox and radio styling */
+input[type="checkbox"]:checked {
+  @apply transform scale-110;
+  transition: transform 0.1s ease-in-out;
+}
+
+/* Success and error states */
+.field-success {
+  @apply border-green-500 bg-green-50 dark:bg-green-900/20;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+.field-error {
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+  20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+
+/* Loading states */
+.loading-shimmer {
+  @apply bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700;
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  .form-group {
+    @apply space-y-3;
+  }
+
+  .file-upload-area {
+    @apply p-4;
+  }
+}

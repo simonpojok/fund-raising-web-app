@@ -1,7 +1,7 @@
 export { CreateCampaignComponent } from './create-campaign.component';
 
 // Sub-components
-export { CampaignBasicInfoComponent } from './components/campaign-basic-info/campaign-basic-info.component';
+export { CampaignBasicInfoComponent } from './components/basic-info-card/basic-info-card.component';
 export { CampaignDetailsComponent } from './components/campaign-details/campaign-details.component';
 export { CampaignSettingsComponent } from './components/campaign-settings/campaign-settings.component';
 export { CampaignPreviewComponent } from './components/campaign-preview/campaign-preview.component';
