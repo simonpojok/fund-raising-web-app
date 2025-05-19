@@ -1,5 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import {Component, Input, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AuthService} from '../../../../../../../core/services';
 
 @Component({
   selector: 'app-campaign-details',
@@ -10,16 +11,19 @@ export class CampaignDetailsComponent implements OnInit {
   @Input() formGroup!: FormGroup;
   @Input() initialData: any = null;
 
-  selectedVideoFile: File | null = null;
-  videoPreview: string | null = null;
+  currentUser: any = null;
   minDate: string = '';
   maxDate: string = '';
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.setupDateLimits();
     this.setupForm();
+    this.loadUserData();
 
     if (this.initialData) {
       this.formGroup.patchValue(this.initialData);
@@ -44,8 +48,23 @@ export class CampaignDetailsComponent implements OnInit {
       this.futureDateValidator.bind(this)
     ]));
 
-    // Optional video file
-    this.formGroup.addControl('video', this.fb.control(null));
+    // coordinator field will be set automatically from current user
+    this.formGroup.addControl('coordinator', this.fb.control('', [
+      Validators.required
+    ]));
+  }
+
+  loadUserData(): void {
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+
+      // Automatically set coordinator to current user's ID
+      if (user && !this.initialData) {
+        this.formGroup.patchValue({
+          coordinator: user.id
+        });
+      }
+    });
   }
 
   // Custom validator for future dates
@@ -61,40 +80,6 @@ export class CampaignDetailsComponent implements OnInit {
     }
 
     return null;
-  }
-
-  // Handle video file selection
-  onVideoSelected(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith('video/')) {
-        alert('Please select a video file.');
-        return;
-      }
-
-      // Validate file size (max 50MB)
-      if (file.size > 50 * 1024 * 1024) {
-        alert('Video size must be less than 50MB.');
-        return;
-      }
-
-      this.selectedVideoFile = file;
-      this.formGroup.get('video')?.setValue(file);
-
-      // Create preview URL
-      this.videoPreview = URL.createObjectURL(file);
-    }
-  }
-
-  // Remove video
-  removeVideo(): void {
-    if (this.videoPreview) {
-      URL.revokeObjectURL(this.videoPreview);
-      this.videoPreview = null;
-    }
-    this.selectedVideoFile = null;
-    this.formGroup.get('video')?.setValue(null);
   }
 
   // Get formatted date for display
@@ -119,8 +104,6 @@ export class CampaignDetailsComponent implements OnInit {
     const eventDate = new Date(dateValue);
     const today = new Date();
     const diffTime = eventDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    return diffDays;
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }
 }

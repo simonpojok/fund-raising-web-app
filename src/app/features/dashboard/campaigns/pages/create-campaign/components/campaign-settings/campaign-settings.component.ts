@@ -1,6 +1,6 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {FormGroup, FormBuilder, Validators, FormArray} from '@angular/forms';
-import {CreateCampaignService} from '../../services/create-campaign.service';
+import { Component, Input, OnInit } from '@angular/core';
+import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
+import { CreateCampaignService } from '../../services/create-campaign.service';
 import {ICampaignPaymentMethod} from '../../interfaces/campaign_payment_method.interface';
 import {ISupportedPaymentMethod} from '../../interfaces/supported_payment_method.interface';
 
@@ -19,13 +19,11 @@ export class CampaignSettingsComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private createCampaignService: CreateCampaignService
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
     this.setupForm();
     this.loadSupportedPaymentMethods();
-
     if (this.initialData) {
       this.formGroup.patchValue(this.initialData);
       this.loadPaymentMethods();
@@ -44,11 +42,11 @@ export class CampaignSettingsComponent implements OnInit {
     this.formGroup.addControl('is_invitation_only', this.fb.control(false));
     this.formGroup.addControl('auto_approve_invitees', this.fb.control(true));
 
-    // Published status
+    // Set default value for is_published (will be set when creating campaign)
     this.formGroup.addControl('is_published', this.fb.control(true));
 
     // Payment methods
-    this.formGroup.addControl('payment_methods', this.fb.array([]));
+    this.formGroup.addControl('payment_methods', this.fb.array([], [this.atLeastOnePaymentMethodValidator()]));
   }
 
   loadSupportedPaymentMethods(): void {
@@ -61,6 +59,13 @@ export class CampaignSettingsComponent implements OnInit {
       error: (error) => {
         console.error('Error loading payment methods:', error);
         this.loadingPaymentMethods = false;
+        // Fallback to default payment methods
+        this.supportedPaymentMethods = [
+          { id: 'mtn', name: 'MTN Mobile Money', description: 'Pay using MTN Mobile Money', is_active: true },
+          { id: 'airtel', name: 'Airtel Money', description: 'Pay using Airtel Money', is_active: true },
+          { id: 'bank', name: 'Bank Transfer', description: 'Direct bank transfer', is_active: true },
+          { id: 'cash', name: 'Cash Payment', description: 'Pay in cash', is_active: true }
+        ];
       }
     });
   }
@@ -69,7 +74,7 @@ export class CampaignSettingsComponent implements OnInit {
     if (this.initialData && this.initialData.payment_methods) {
       const paymentMethodsArray = this.formGroup.get('payment_methods') as FormArray;
       this.initialData.payment_methods.forEach((method: ICampaignPaymentMethod) => {
-        paymentMethodsArray.push(this.createPaymentMethodGroup(method));
+        paymentMethodsArray.push(this.createPaymentMethodGroup(method.id, method.account_name, method.account_number));
       });
     }
   }
@@ -78,29 +83,29 @@ export class CampaignSettingsComponent implements OnInit {
     return this.formGroup.get('payment_methods') as FormArray;
   }
 
-  createPaymentMethodGroup(method: Partial<ICampaignPaymentMethod> = {}): FormGroup {
+  createPaymentMethodGroup(id: string = '', accountName: string = '', accountNumber: string = ''): FormGroup {
     return this.fb.group({
-      id: [method.id || '', Validators.required],
-      account_name: [method.account_name || '', Validators.required],
-      account_number: [method.account_number || '', Validators.required]
+      id: [id, Validators.required],
+      account_name: [accountName, Validators.required],
+      account_number: [accountNumber, Validators.required]
     });
   }
 
-  addPaymentMethod(methodId?: string): void {
-    const newMethod = methodId ? {id: methodId} : {};
-    this.paymentMethodsArray.push(this.createPaymentMethodGroup(newMethod));
+  addPaymentMethod(paymentMethodId?: string): void {
+    const newMethod = this.createPaymentMethodGroup(paymentMethodId || '');
+    this.paymentMethodsArray.push(newMethod);
   }
 
   removePaymentMethod(index: number): void {
     this.paymentMethodsArray.removeAt(index);
   }
 
-  getPaymentMethodName(id: string): string {
-    const method = this.supportedPaymentMethods.find(m => m.id === id);
-    return method ? method.name : id;
+  // Custom validator to ensure at least one payment method
+  atLeastOnePaymentMethodValidator(control: FormArray) {
+    return control.length >= 1 ? null : { atLeastOnePaymentMethod: true };
   }
 
-  // Get validation status for different sections
+  // Get validation status for payment methods
   isPaymentMethodsValid(): boolean {
     return this.paymentMethodsArray.length > 0 && this.paymentMethodsArray.valid;
   }
@@ -128,6 +133,12 @@ export class CampaignSettingsComponent implements OnInit {
     return 'Only people with the direct link can view and contribute.';
   }
 
+  // Get payment method name by ID
+  getPaymentMethodName(id: string): string {
+    const method = this.supportedPaymentMethods.find(m => m.id === id);
+    return method ? method.name : 'Unknown Payment Method';
+  }
+
   // Form validation helpers
   getPaymentMethodError(index: number, field: string): string | null {
     const paymentMethod = this.paymentMethodsArray.at(index);
@@ -135,18 +146,19 @@ export class CampaignSettingsComponent implements OnInit {
 
     if (control?.invalid && (control?.dirty || control?.touched)) {
       if (control.errors?.['required']) {
-        switch (field) {
-          case 'id':
-            return 'Payment method type is required';
-          case 'account_name':
-            return 'Account name is required';
-          case 'account_number':
-            return 'Account number is required';
-          default:
-            return 'This field is required';
-        }
+        const fieldLabels: { [key: string]: string } = {
+          'id': 'Payment method',
+          'account_name': 'Account name',
+          'account_number': 'Account number'
+        };
+        return `${fieldLabels[field] || field} is required`;
       }
     }
     return null;
+  }
+
+  // Check if payment method type is already added
+  isPaymentMethodAdded(methodId: string): boolean {
+    return this.paymentMethodsArray.value.some((method: ICampaignPaymentMethod) => method.id === methodId);
   }
 }

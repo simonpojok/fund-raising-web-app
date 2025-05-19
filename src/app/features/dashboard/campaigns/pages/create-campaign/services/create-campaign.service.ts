@@ -1,75 +1,45 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, of, delay } from 'rxjs';
-import { environment } from '../../../../../../../environments/environment';
-import {ICampaignPaymentMethod} from '../interfaces/campaign_payment_method.interface';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {environment} from '../../../../../../../environments/environment';
+import {CreateCampaignRequest} from '../interfaces/create-campaign-request.interface';
 import {ISupportCampaignCategory} from '../interfaces/support_category.interface';
 import {ISupportedPaymentMethod} from '../interfaces/supported_payment_method.interface';
-import {CreateCampaignRequest} from '../interfaces/create-campaign-request.interface';
-
-
-export interface CampaignResponse {
-  id: string;
-  title: string;
-  description: string;
-  target_amount: number;
-  created_at: string;
-  is_draft: boolean;
-}
 
 @Injectable({
   providedIn: 'root'
 })
 export class CreateCampaignService {
-  private readonly apiUrl = `${environment.apiUrl}/campaigns/`;
+  private readonly apiUrl = `${environment.apiUrl}/campaigns`;
 
-  constructor(private http: HttpClient) {}
-
-  // Get supported categories
-  getSupportedCategories(): Observable<ISupportCampaignCategory[]> {
-    return this.http.get<ISupportCampaignCategory[]>(`${this.apiUrl}categories/`);
-  }
-
-  // Get supported payment methods
-  getSupportedPaymentMethods(): Observable<ISupportedPaymentMethod[]> {
-    return this.http.get<ISupportedPaymentMethod[]>(`${this.apiUrl}payment-methods/`);
+  constructor(private http: HttpClient) {
   }
 
   // Create a new campaign
-  createCampaign(campaignData: CreateCampaignRequest): Observable<CampaignResponse> {
-    const formData = this.createFormData(campaignData);
-    return this.http.post<CampaignResponse>(this.apiUrl, formData);
-  }
-
-  // Save campaign as draft
-  saveDraft(campaignData: Partial<CreateCampaignRequest>): Observable<any> {
-    const formData = this.createFormData(campaignData);
-    return this.http.post<any>(`${this.apiUrl}draft/`, formData);
-  }
-
-  // Load draft campaign
-  loadDraft(draftId: string): Observable<CreateCampaignRequest> {
-    return this.http.get<CreateCampaignRequest>(`${this.apiUrl}draft/${draftId}/`);
-  }
-
-  // Create FormData for file uploads
-  private createFormData(campaignData: Partial<CreateCampaignRequest>): FormData {
+  createCampaign(campaignData: CreateCampaignRequest): Observable<any> {
     const formData = new FormData();
 
-    // Add all non-file fields
-    Object.keys(campaignData).forEach(key => {
-      // @ts-ignore
-      if (key !== 'banner' && key !== 'video' && campaignData[key] !== undefined) {
-        if (key === 'payment_methods') {
-          formData.append(key, JSON.stringify(campaignData[key]));
-        } else {
-          // @ts-ignore
-          formData.append(key, campaignData[key] as string);
-        }
-      }
-    });
+    // Append all text fields
+    formData.append('title', campaignData.title);
+    formData.append('description', campaignData.description);
+    formData.append('end_date', campaignData.end_date);
+    formData.append('coordinator', campaignData.coordinator);
+    formData.append('target_amount', campaignData.target_amount.toString());
+    formData.append('category', campaignData.category);
+    formData.append('is_urgent', campaignData.is_urgent.toString());
+    formData.append('is_public', campaignData.is_public.toString());
+    formData.append('include_pledges', campaignData.include_pledges.toString());
+    formData.append('allow_anonymous_contributions', campaignData.allow_anonymous_contributions.toString());
+    formData.append('send_thank_you_messages', campaignData.send_thank_you_messages.toString());
+    formData.append('allow_comments', campaignData.allow_comments.toString());
+    formData.append('is_invitation_only', campaignData.is_invitation_only.toString());
+    formData.append('auto_approve_invitees', campaignData.auto_approve_invitees.toString());
+    formData.append('is_published', campaignData.is_published.toString());
 
-    // Add files if present
+    // Append payment methods as JSON
+    formData.append('payment_methods', JSON.stringify(campaignData.payment_methods));
+
+    // Append files if present
     if (campaignData.banner) {
       formData.append('banner', campaignData.banner);
     }
@@ -77,7 +47,23 @@ export class CreateCampaignService {
       formData.append('video', campaignData.video);
     }
 
-    return formData;
+    return this.http.post<any>(`${this.apiUrl}/`, formData);
+  }
+
+  // Save campaign as draft
+  saveDraft(campaignData: Partial<CreateCampaignRequest>): Observable<any> {
+    const draftData = {...campaignData, is_published: false};
+    return this.createCampaign(draftData as CreateCampaignRequest);
+  }
+
+  // Get campaign categories
+  getCampaignCategories(): Observable<ISupportCampaignCategory[]> {
+    return this.http.get<ISupportCampaignCategory[]>(`${environment.apiUrl}/categories/`);
+  }
+
+  // Get supported payment methods
+  getSupportedPaymentMethods(): Observable<ISupportedPaymentMethod[]> {
+    return this.http.get<ISupportedPaymentMethod[]>(`${environment.apiUrl}/payment-methods/`);
   }
 
   // Validate campaign data
@@ -91,10 +77,6 @@ export class CreateCampaignService {
 
     if (!campaignData.description || campaignData.description.trim().length < 50) {
       errors.push('Campaign description must be at least 50 characters');
-    }
-
-    if (!campaignData.coordinator || campaignData.coordinator.trim().length === 0) {
-      errors.push('Coordinator is required');
     }
 
     if (!campaignData.target_amount || campaignData.target_amount < 10000) {
@@ -114,6 +96,10 @@ export class CreateCampaignService {
       if (endDate <= today) {
         errors.push('End date must be in the future');
       }
+    }
+
+    if (!campaignData.coordinator) {
+      errors.push('Coordinator is required');
     }
 
     // Payment methods validation
@@ -139,12 +125,11 @@ export class CreateCampaignService {
     };
   }
 
-  // Upload campaign image/video
-  uploadFile(file: File, type: 'image' | 'video'): Observable<{ url: string }> {
+  // Upload files (if needed separately)
+  uploadFile(file: File, type: 'banner' | 'video'): Observable<{ url: string }> {
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('type', type);
+    formData.append(type, file);
 
-    return this.http.post<{ url: string }>(`${this.apiUrl}upload/`, formData);
+    return this.http.post<{ url: string }>(`${this.apiUrl}/upload/`, formData);
   }
 }
