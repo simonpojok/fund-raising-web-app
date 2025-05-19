@@ -1,0 +1,363 @@
+<div class="w-full">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="grid" [ngClass]="getGridClasses()">
+    <div *ngFor="let item of [1,2,3,4,5,6]" class="animate-pulse">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <!-- Skeleton Image -->
+        <div class="h-48 bg-gray-300 dark:bg-gray-600 loading-skeleton"></div>
+        <!-- Skeleton Content -->
+        <div class="p-6">
+          <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded mb-2 loading-skeleton"></div>
+          <div class="h-3 bg-gray-300 dark:bg-gray-600 rounded mb-4 w-3/4 loading-skeleton"></div>
+          <div class="h-2 bg-gray-300 dark:bg-gray-600 rounded mb-2 loading-skeleton"></div>
+          <div class="flex justify-between">
+            <div class="h-3 bg-gray-300 dark:bg-gray-600 rounded w-1/3 loading-skeleton"></div>
+            <div class="h-3 bg-gray-300 dark:bg-gray-600 rounded w-1/4 loading-skeleton"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && campaigns.length === 0" class="text-center py-12">
+    <div class="mx-auto max-w-md">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 mx-auto mb-6 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+      </svg>
+      <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-3">No campaigns found</h3>
+      <p class="text-gray-600 dark:text-gray-400 mb-6">
+        Try adjusting your search or filters to find what you're looking for.
+      </p>
+    </div>
+  </div>
+
+  <!-- Campaigns Grid/List -->
+  <div *ngIf="!loading && campaigns.length > 0" class="grid" [ngClass]="getGridClasses()">
+    <div *ngFor="let campaign of campaigns; trackBy: trackByFn"
+         class="campaign-card bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-200 hover:shadow-lg"
+         [ngClass]="getUrgencyClass(campaign)">
+
+      <!-- Grid View Layout -->
+      <div *ngIf="viewMode === 'grid'">
+        <!-- Campaign Image -->
+        <div class="relative">
+          <img
+            [src]="getCampaignImage(campaign)"
+            [alt]="campaign.title"
+            class="w-full h-48 object-cover"
+            [class.opacity-75]="getCampaignStatus(campaign) !== 'active'"
+          />
+
+          <!-- Status Badge -->
+          <div class="absolute top-3 left-3">
+            <span
+              class="inline-block px-2 py-1 text-xs font-semibold rounded-full border"
+              [ngClass]="getStatusBgClass(getCampaignStatus(campaign))"
+            >
+              <span [ngClass]="getStatusColorClass(getCampaignStatus(campaign))">
+                {{ getCampaignStatus(campaign) | titlecase }}
+              </span>
+            </span>
+          </div>
+
+          <!-- Urgent Badge -->
+          <div *ngIf="campaign.is_urgent" class="absolute top-3 right-3">
+            <span class="inline-block px-2 py-1 text-xs font-bold rounded-full bg-red-500 text-white animate-pulse">
+              URGENT
+            </span>
+          </div>
+
+          <!-- Days Remaining Badge -->
+          <div class="absolute bottom-3 right-3">
+            <span
+              class="inline-block px-2 py-1 text-xs font-medium rounded-full bg-black bg-opacity-70 text-white"
+              [ngClass]="getDaysRemainingClass(campaign)"
+            >
+              {{ getDaysRemainingText(campaign) }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Card Content -->
+        <div class="p-6">
+          <!-- Title and Description -->
+          <div class="mb-4">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
+              {{ getTruncatedTitle(campaign.title, 60) }}
+            </h3>
+            <p class="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
+              {{ getTruncatedDescription(campaign.description, 120) }}
+            </p>
+          </div>
+
+          <!-- Progress Section -->
+          <div class="mb-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Progress</span>
+              <span class="text-sm font-semibold text-gray-900 dark:text-white">
+                {{ campaign.progress_percentage }}%
+              </span>
+            </div>
+            <app-progress-bar
+              [progress]="campaign.progress_percentage"
+              [color]="getProgressColor(campaign.progress_percentage)"
+              [height]="'h-2'"
+              [animate]="false"
+            ></app-progress-bar>
+          </div>
+
+          <!-- Stats -->
+          <div class="flex justify-between text-sm mb-4">
+            <div>
+              <span class="font-semibold text-gray-900 dark:text-white">
+                {{ formatCurrency(campaign.total_contributed) }}
+              </span>
+              <span class="text-gray-500 dark:text-gray-400"> raised</span>
+            </div>
+            <div class="text-right">
+              <span class="text-gray-500 dark:text-gray-400">Goal: </span>
+              <span class="font-medium text-gray-900 dark:text-white">
+                {{ formatCurrency(campaign.target_amount) }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Footer Info -->
+          <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+            <div class="flex items-center justify-between text-sm">
+              <div class="flex items-center text-gray-500 dark:text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                {{ getContributionStats(campaign) }}
+              </div>
+              <span class="text-gray-400 dark:text-gray-500">
+                {{ formatTimeAgo(campaign.created_at) }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div *ngIf="showActions" class="mt-4 flex space-x-2">
+            <button
+              (click)="onView(campaign)"
+              class="flex-1 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium py-2 px-4 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500"
+            >
+              View Details
+            </button>
+
+            <div class="flex space-x-1">
+              <button
+                *ngIf="canContribute(campaign)"
+                (click)="onContribute(campaign)"
+                class="bg-success hover:bg-success-600 text-white text-sm font-medium py-2 px-3 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-success"
+                title="Make a contribution"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </button>
+
+              <button
+                *ngIf="canPledge(campaign)"
+                (click)="onPledge(campaign)"
+                class="bg-warning hover:bg-warning-600 text-white text-sm font-medium py-2 px-3 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-warning"
+                title="Make a pledge"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </button>
+
+              <button
+                (click)="onShare(campaign)"
+                class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium py-2 px-3 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
+                title="Share campaign"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                </svg>
+              </button>
+
+              <button
+                *ngIf="isOwner(campaign)"
+                (click)="onEdit(campaign)"
+                class="bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 text-blue-700 dark:text-blue-300 text-sm font-medium py-2 px-3 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                title="Edit campaign"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- List View Layout -->
+      <div *ngIf="viewMode === 'list'" class="flex">
+        <!-- Campaign Image -->
+        <div class="flex-shrink-0">
+          <img
+            [src]="getCampaignImage(campaign)"
+            [alt]="campaign.title"
+            class="w-32 h-32 object-cover"
+            [class.opacity-75]="getCampaignStatus(campaign) !== 'active'"
+          />
+        </div>
+
+        <!-- Content -->
+        <div class="flex-1 p-6">
+          <div class="flex items-start justify-between">
+            <!-- Main Content -->
+            <div class="flex-1 pr-4">
+              <!-- Header -->
+              <div class="flex items-center space-x-2 mb-2">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                  {{ getTruncatedTitle(campaign.title, 80) }}
+                </h3>
+
+                <!-- Status Badge -->
+                <span
+                  class="inline-block px-2 py-1 text-xs font-semibold rounded-full border"
+                  [ngClass]="getStatusBgClass(getCampaignStatus(campaign))"
+                >
+                  <span [ngClass]="getStatusColorClass(getCampaignStatus(campaign))">
+                    {{ getCampaignStatus(campaign) | titlecase }}
+                  </span>
+                </span>
+
+                <!-- Urgent Badge -->
+                <span *ngIf="campaign.is_urgent" class="inline-block px-2 py-1 text-xs font-bold rounded-full bg-red-500 text-white animate-pulse">
+                  URGENT
+                </span>
+              </div>
+
+              <!-- Description -->
+              <p class="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-2">
+                {{ getTruncatedDescription(campaign.description, 200) }}
+              </p>
+
+              <!-- Progress and Stats -->
+              <div class="flex items-center space-x-6">
+                <!-- Progress -->
+                <div class="flex-1 max-w-xs">
+                  <div class="flex justify-between items-center mb-1">
+                    <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Progress</span>
+                    <span class="text-xs font-semibold text-gray-900 dark:text-white">
+                      {{ campaign.progress_percentage }}%
+                    </span>
+                  </div>
+                  <app-progress-bar
+                    [progress]="campaign.progress_percentage"
+                    [color]="getProgressColor(campaign.progress_percentage)"
+                    [height]="'h-1.5'"
+                    [animate]="false"
+                  ></app-progress-bar>
+                </div>
+
+                <!-- Amount Stats -->
+                <div class="text-sm">
+                  <div class="font-semibold text-gray-900 dark:text-white">
+                    {{ formatCurrency(campaign.total_contributed) }}
+                  </div>
+                  <div class="text-gray-500 dark:text-gray-400">
+                    of {{ formatCurrency(campaign.target_amount) }}
+                  </div>
+                </div>
+
+                <!-- Time Remaining -->
+                <div class="text-sm text-center">
+                  <div class="font-medium" [ngClass]="getDaysRemainingClass(campaign)">
+                    {{ getDaysRemainingText(campaign) }}
+                  </div>
+                  <div class="text-gray-500 dark:text-gray-400">
+                    {{ getContributionStats(campaign) }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Footer Info -->
+              <div class="mt-3 flex items-center text-xs text-gray-500 dark:text-gray-400">
+                <span>Created {{ formatTimeAgo(campaign.created_at) }}</span>
+                <span class="mx-2">•</span>
+                <span>{{ campaign.category }}</span>
+                <span class="mx-2">•</span>
+                <span>by {{ campaign.coordinator_name }}</span>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div *ngIf="showActions" class="flex-shrink-0 flex flex-col space-y-2">
+              <button
+                (click)="onView(campaign)"
+                class="bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium py-2 px-4 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500"
+              >
+                View Details
+              </button>
+
+              <div class="flex space-x-1">
+                <button
+                  *ngIf="canContribute(campaign)"
+                  (click)="onContribute(campaign)"
+                  class="bg-success hover:bg-success-600 text-white text-sm font-medium py-2 px-3 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-success"
+                  title="Make a contribution"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </button>
+
+                <button
+                  *ngIf="canPledge(campaign)"
+                  (click)="onPledge(campaign)"
+                  class="bg-warning hover:bg-warning-600 text-white text-sm font-medium py-2 px-3 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-warning"
+                  title="Make a pledge"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                </button>
+
+                <button
+                  (click)="onShare(campaign)"
+                  class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium py-2 px-3 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
+                  title="Share campaign"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                  </svg>
+                </button>
+
+                <button
+                  *ngIf="isOwner(campaign)"
+                  (click)="onEdit(campaign)"
+                  class="bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 text-blue-700 dark:text-blue-300 text-sm font-medium py-2 px-3 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  title="Edit campaign"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load More Button -->
+  <div *ngIf="!loading && campaigns.length > 0" class="mt-8 text-center">
+    <button
+      (click)="onLoadMore()"
+      class="load-more-btn inline-flex items-center px-6 py-3 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+      </svg>
+      Load More Campaigns
+    </button>
+  </div>
+</div>
