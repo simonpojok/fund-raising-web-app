@@ -6,6 +6,7 @@ import {CreateCampaignRequest} from '../interfaces/create-campaign-request.inter
 import {ISupportCampaignCategory} from '../interfaces/support_category.interface';
 import {ISupportedPaymentMethod} from '../interfaces/supported_payment_method.interface';
 import {IGetSupportCategoryResponse} from '../interfaces/get-support-category-response.interface';
+import {GetPaymentMethodsResponseInterface} from '../interfaces/get-payment-methods-response.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -63,8 +64,8 @@ export class CreateCampaignService {
   }
 
   // Get supported payment methods
-  getSupportedPaymentMethods(): Observable<ISupportedPaymentMethod[]> {
-    return this.http.get<ISupportedPaymentMethod[]>(`${environment.apiUrl}/payment-methods/`);
+  getSupportedPaymentMethods(): Observable<GetPaymentMethodsResponseInterface> {
+    return this.http.get<GetPaymentMethodsResponseInterface>(`${environment.apiUrl}/payment-methods/`);
   }
 
   // Validate campaign data

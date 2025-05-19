@@ -108,19 +108,12 @@ export class CreateCampaignComponent implements OnInit {
     this.loadingPaymentMethods = true;
     this.createCampaignService.getSupportedPaymentMethods().subscribe({
       next: (methods) => {
-        this.supportedPaymentMethods = methods.filter(method => method.is_active);
+        this.supportedPaymentMethods = methods.results.filter(method => method.is_active);
         this.loadingPaymentMethods = false;
       },
       error: (error) => {
         console.error('Error loading payment methods:', error);
         this.loadingPaymentMethods = false;
-        // Fallback to default payment methods
-        this.supportedPaymentMethods = [
-          { id: 'mtn', name: 'MTN Mobile Money', description: 'Pay using MTN Mobile Money', is_active: true },
-          { id: 'airtel', name: 'Airtel Money', description: 'Pay using Airtel Money', is_active: true },
-          { id: 'bank', name: 'Bank Transfer', description: 'Direct bank transfer', is_active: true },
-          { id: 'cash', name: 'Cash Payment', description: 'Pay in cash', is_active: true }
-        ];
       }
     });
   }
@@ -329,7 +322,7 @@ export class CreateCampaignComponent implements OnInit {
 
         // Redirect to campaign details after 2 seconds
         setTimeout(() => {
-          this.router.navigate(['/dashboard/campaigns', response.id]);
+          this.router.navigate(['/dashboard/campaigns', response.id]).then();
         }, 2000);
       },
       error: (error) => {
