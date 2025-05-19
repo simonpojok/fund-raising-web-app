@@ -1,10 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormGroup, FormBuilder, Validators, FormArray} from '@angular/forms';
-
-interface PaymentMethod {
-  name: string;
-  number: string;
-}
+import {CreateCampaignService} from '../../services/create-campaign.service';
+import {ICampaignPaymentMethod} from '../../interfaces/campaign_payment_method.interface';
+import {ISupportedPaymentMethod} from '../../interfaces/supported_payment_method.interface';
 
 @Component({
   selector: 'app-campaign-settings',
@@ -15,18 +13,19 @@ export class CampaignSettingsComponent implements OnInit {
   @Input() formGroup!: FormGroup;
   @Input() initialData: any = null;
 
-  predefinedPaymentMethods = [
-    {id: 'mtn', name: 'MTN Mobile Money', placeholder: '256700000000'},
-    {id: 'airtel', name: 'Airtel Money', placeholder: '256750000000'},
-    {id: 'bank', name: 'Bank Transfer', placeholder: 'Account: 123456789'},
-    {id: 'other', name: 'Other', placeholder: 'Enter details'}
-  ];
+  supportedPaymentMethods: ISupportedPaymentMethod[] = [];
+  loadingPaymentMethods = false;
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private createCampaignService: CreateCampaignService
+  ) {
   }
 
   ngOnInit(): void {
     this.setupForm();
+    this.loadSupportedPaymentMethods();
+
     if (this.initialData) {
       this.formGroup.patchValue(this.initialData);
       this.loadPaymentMethods();
@@ -35,56 +34,70 @@ export class CampaignSettingsComponent implements OnInit {
 
   setupForm(): void {
     // Campaign visibility and permissions
-    this.formGroup.addControl('isPublic', this.fb.control(true));
-    this.formGroup.addControl('allowAnonymousContributions', this.fb.control(true));
-    this.formGroup.addControl('includePledges', this.fb.control(true));
-    this.formGroup.addControl('sendThankYouMessages', this.fb.control(true));
-    this.formGroup.addControl('allowComments', this.fb.control(true));
+    this.formGroup.addControl('is_public', this.fb.control(true));
+    this.formGroup.addControl('allow_anonymous_contributions', this.fb.control(true));
+    this.formGroup.addControl('include_pledges', this.fb.control(true));
+    this.formGroup.addControl('send_thank_you_messages', this.fb.control(true));
+    this.formGroup.addControl('allow_comments', this.fb.control(true));
 
     // Invitation settings
-    this.formGroup.addControl('isInvitationOnly', this.fb.control(false));
-    this.formGroup.addControl('autoApproveInvitees', this.fb.control(true));
+    this.formGroup.addControl('is_invitation_only', this.fb.control(false));
+    this.formGroup.addControl('auto_approve_invitees', this.fb.control(true));
+
+    // Published status
+    this.formGroup.addControl('is_published', this.fb.control(true));
 
     // Payment methods
-    this.formGroup.addControl('paymentMethods', this.fb.array([]));
+    this.formGroup.addControl('payment_methods', this.fb.array([]));
+  }
+
+  loadSupportedPaymentMethods(): void {
+    this.loadingPaymentMethods = true;
+    this.createCampaignService.getSupportedPaymentMethods().subscribe({
+      next: (methods) => {
+        this.supportedPaymentMethods = methods.filter(method => method.is_active);
+        this.loadingPaymentMethods = false;
+      },
+      error: (error) => {
+        console.error('Error loading payment methods:', error);
+        this.loadingPaymentMethods = false;
+      }
+    });
   }
 
   loadPaymentMethods(): void {
-    if (this.initialData && this.initialData.paymentMethods) {
-      const paymentMethodsArray = this.formGroup.get('paymentMethods') as FormArray;
-      this.initialData.paymentMethods.forEach((method: PaymentMethod) => {
-        paymentMethodsArray.push(this.createPaymentMethodGroup(method.name, method.number));
+    if (this.initialData && this.initialData.payment_methods) {
+      const paymentMethodsArray = this.formGroup.get('payment_methods') as FormArray;
+      this.initialData.payment_methods.forEach((method: ICampaignPaymentMethod) => {
+        paymentMethodsArray.push(this.createPaymentMethodGroup(method));
       });
     }
   }
 
   get paymentMethodsArray(): FormArray {
-    return this.formGroup.get('paymentMethods') as FormArray;
+    return this.formGroup.get('payment_methods') as FormArray;
   }
 
-  createPaymentMethodGroup(name: string = '', number: string = ''): FormGroup {
+  createPaymentMethodGroup(method: Partial<ICampaignPaymentMethod> = {}): FormGroup {
     return this.fb.group({
-      name: [name, Validators.required],
-      number: [number, Validators.required]
+      id: [method.id || '', Validators.required],
+      account_name: [method.account_name || '', Validators.required],
+      account_number: [method.account_number || '', Validators.required]
     });
   }
 
-  addPaymentMethod(): void {
-    this.paymentMethodsArray.push(this.createPaymentMethodGroup());
+  addPaymentMethod(methodId?: string): void {
+    const newMethod = methodId ? {id: methodId} : {};
+    this.paymentMethodsArray.push(this.createPaymentMethodGroup(newMethod));
   }
 
   removePaymentMethod(index: number): void {
     this.paymentMethodsArray.removeAt(index);
   }
 
-  addPredefinedPaymentMethod(methodType: any): void {
-    const existingMethod = this.paymentMethodsArray.value.find(
-      (method: PaymentMethod) => method.name === methodType.name
-    );
-
-    if (!existingMethod) {
-      this.paymentMethodsArray.push(this.createPaymentMethodGroup(methodType.name, ''));
-    }
+  getPaymentMethodName(id: string): string {
+    const method = this.supportedPaymentMethods.find(m => m.id === id);
+    return method ? method.name : id;
   }
 
   // Get validation status for different sections
@@ -94,8 +107,8 @@ export class CampaignSettingsComponent implements OnInit {
 
   // Privacy level helpers
   getPrivacyLevel(): string {
-    const isPublic = this.formGroup.get('isPublic')?.value;
-    const isInvitationOnly = this.formGroup.get('isInvitationOnly')?.value;
+    const isPublic = this.formGroup.get('is_public')?.value;
+    const isInvitationOnly = this.formGroup.get('is_invitation_only')?.value;
 
     if (isInvitationOnly) return 'Private (Invitation Only)';
     if (isPublic) return 'Public';
@@ -103,8 +116,8 @@ export class CampaignSettingsComponent implements OnInit {
   }
 
   getPrivacyDescription(): string {
-    const isPublic = this.formGroup.get('isPublic')?.value;
-    const isInvitationOnly = this.formGroup.get('isInvitationOnly')?.value;
+    const isPublic = this.formGroup.get('is_public')?.value;
+    const isInvitationOnly = this.formGroup.get('is_invitation_only')?.value;
 
     if (isInvitationOnly) {
       return 'Only people you invite can view and contribute to this campaign.';
@@ -122,7 +135,16 @@ export class CampaignSettingsComponent implements OnInit {
 
     if (control?.invalid && (control?.dirty || control?.touched)) {
       if (control.errors?.['required']) {
-        return `${field === 'name' ? 'Payment method name' : 'Account details'} is required`;
+        switch (field) {
+          case 'id':
+            return 'Payment method type is required';
+          case 'account_name':
+            return 'Account name is required';
+          case 'account_number':
+            return 'Account number is required';
+          default:
+            return 'This field is required';
+        }
       }
     }
     return null;

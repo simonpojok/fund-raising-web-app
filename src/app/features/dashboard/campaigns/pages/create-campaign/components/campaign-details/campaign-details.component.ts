@@ -1,6 +1,5 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {FormGroup, FormBuilder, Validators} from '@angular/forms';
-import {AuthService} from '../../../../../../../core/services';
+import { Component, Input, OnInit } from '@angular/core';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-campaign-details',
@@ -11,20 +10,16 @@ export class CampaignDetailsComponent implements OnInit {
   @Input() formGroup!: FormGroup;
   @Input() initialData: any = null;
 
-  currentUser: any = null;
+  selectedVideoFile: File | null = null;
+  videoPreview: string | null = null;
   minDate: string = '';
   maxDate: string = '';
 
-  constructor(
-    private fb: FormBuilder,
-    private authService: AuthService
-  ) {
-  }
+  constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.setupDateLimits();
     this.setupForm();
-    this.loadUserData();
 
     if (this.initialData) {
       this.formGroup.patchValue(this.initialData);
@@ -44,53 +39,13 @@ export class CampaignDetailsComponent implements OnInit {
   }
 
   setupForm(): void {
-    this.formGroup.addControl('eventDate', this.fb.control('', [
+    this.formGroup.addControl('end_date', this.fb.control('', [
       Validators.required,
       this.futureDateValidator.bind(this)
     ]));
 
-    this.formGroup.addControl('location', this.fb.control('', [
-      Validators.required,
-      Validators.maxLength(200)
-    ]));
-
-    this.formGroup.addControl('massDetails', this.fb.control('', [
-      Validators.maxLength(500)
-    ]));
-
-    this.formGroup.addControl('celebrant', this.fb.control('', [
-      Validators.maxLength(100)
-    ]));
-
-    this.formGroup.addControl('coordinatorName', this.fb.control('', [
-      Validators.required,
-      Validators.maxLength(100)
-    ]));
-
-    this.formGroup.addControl('coordinatorEmail', this.fb.control('', [
-      Validators.required,
-      Validators.email
-    ]));
-
-    this.formGroup.addControl('coordinatorPhone', this.fb.control('', [
-      Validators.required,
-      Validators.pattern('^[+]?[(]?[0-9]{3}[)]?[-\\s.]?[0-9]{3}[-\\s.]?[0-9]{4,6}$')
-    ]));
-  }
-
-  loadUserData(): void {
-    this.authService.currentUser$.subscribe(user => {
-      this.currentUser = user;
-
-      // Pre-fill coordinator information with current user data
-      if (user && !this.initialData) {
-        this.formGroup.patchValue({
-          coordinatorName: user.display_name || '',
-          coordinatorEmail: user.email || '',
-          coordinatorPhone: user.phone_number || ''
-        });
-      }
-    });
+    // Optional video file
+    this.formGroup.addControl('video', this.fb.control(null));
   }
 
   // Custom validator for future dates
@@ -102,15 +57,49 @@ export class CampaignDetailsComponent implements OnInit {
     today.setHours(0, 0, 0, 0);
 
     if (selectedDate <= today) {
-      return {pastDate: true};
+      return { pastDate: true };
     }
 
     return null;
   }
 
+  // Handle video file selection
+  onVideoSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('video/')) {
+        alert('Please select a video file.');
+        return;
+      }
+
+      // Validate file size (max 50MB)
+      if (file.size > 50 * 1024 * 1024) {
+        alert('Video size must be less than 50MB.');
+        return;
+      }
+
+      this.selectedVideoFile = file;
+      this.formGroup.get('video')?.setValue(file);
+
+      // Create preview URL
+      this.videoPreview = URL.createObjectURL(file);
+    }
+  }
+
+  // Remove video
+  removeVideo(): void {
+    if (this.videoPreview) {
+      URL.revokeObjectURL(this.videoPreview);
+      this.videoPreview = null;
+    }
+    this.selectedVideoFile = null;
+    this.formGroup.get('video')?.setValue(null);
+  }
+
   // Get formatted date for display
   getFormattedDate(): string {
-    const dateValue = this.formGroup.get('eventDate')?.value;
+    const dateValue = this.formGroup.get('end_date')?.value;
     if (!dateValue) return '';
 
     const date = new Date(dateValue);
@@ -124,7 +113,7 @@ export class CampaignDetailsComponent implements OnInit {
 
   // Get days until event
   getDaysUntilEvent(): number {
-    const dateValue = this.formGroup.get('eventDate')?.value;
+    const dateValue = this.formGroup.get('end_date')?.value;
     if (!dateValue) return 0;
 
     const eventDate = new Date(dateValue);
@@ -134,30 +123,4 @@ export class CampaignDetailsComponent implements OnInit {
 
     return diffDays;
   }
-
-  // Auto-fill location suggestions (could be enhanced with a location service)
-  locationSuggestions = [
-    'Kampala, Uganda',
-    'Entebbe, Uganda',
-    'Jinja, Uganda',
-    'Mbarara, Uganda',
-    'Gulu, Uganda',
-    'Lira, Uganda',
-    'Masaka, Uganda',
-    'Soroti, Uganda'
-  ];
-
-  // Mass/Event type suggestions
-  eventTypeSuggestions = [
-    'Wedding Mass',
-    'Funeral Mass',
-    'Memorial Service',
-    'Thanksgiving Mass',
-    'Birthday Celebration',
-    'Graduation Ceremony',
-    'Community Event',
-    'Charity Event',
-    'Medical Treatment',
-    'Educational Project'
-  ];
 }
