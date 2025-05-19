@@ -9,9 +9,6 @@ import {
   BasicInfoCardComponent
 } from './pages/create-campaign/components/basic-info-card/basic-info-card.component';
 import {
-  CampaignPreviewCardComponent
-} from './pages/create-campaign/components/campaign-preview-card/campaign-preview-card.component';
-import {
   SettingsPaymentCardComponent
 } from './pages/create-campaign/components/settings-payment-card/settings-payment-card.component';
 import {CreateCampaignComponent} from './pages/create-campaign/create-campaign.component';
@@ -36,7 +33,6 @@ const routes: Routes = [
   declarations: [
     CreateCampaignComponent,
     BasicInfoCardComponent,
-    CampaignPreviewCardComponent,
     SettingsPaymentCardComponent,
   ],
   imports: [
