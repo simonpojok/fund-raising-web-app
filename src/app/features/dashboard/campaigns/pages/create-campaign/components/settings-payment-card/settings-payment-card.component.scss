@@ -1,0 +1,185 @@
+/* Settings Payment Card Styles */
+.form-section {
+  @apply transition-all duration-200 ease-in-out;
+}
+
+.form-section:hover {
+  @apply transform translate-y-0;
+}
+
+/* Checkbox styling improvements */
+input[type="checkbox"] {
+  @apply transition-all duration-200;
+}
+
+input[type="checkbox"]:checked {
+  @apply transform scale-110;
+  transition: transform 0.1s ease-in-out;
+}
+
+input[type="checkbox"]:focus {
+  @apply ring-2 ring-primary-500 ring-offset-2;
+}
+
+/* Payment method card styling */
+.payment-method-card {
+  @apply transition-all duration-300 ease-in-out;
+  @apply hover:shadow-md;
+}
+
+.payment-method-card:hover {
+  @apply bg-gray-100 dark:bg-gray-600;
+}
+
+/* Form field focus effects */
+input:focus,
+select:focus {
+  @apply transform translate-y-0 scale-100;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Settings preview styling */
+.settings-preview {
+  @apply bg-gradient-to-r from-blue-50 to-indigo-50;
+  @apply dark:from-blue-900/20 dark:to-indigo-900/20;
+  @apply border border-blue-200 dark:border-blue-700;
+  @apply rounded-lg p-4;
+  @apply transition-all duration-300;
+}
+
+/* Feature badge styling */
+.feature-badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  @apply bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200;
+  @apply transition-all duration-200;
+}
+
+.feature-badge:hover {
+  @apply transform scale-105;
+}
+
+/* Payment method button styling */
+.payment-method-button {
+  @apply transition-all duration-200 ease-in-out;
+  @apply hover:transform hover:scale-105;
+}
+
+.payment-method-button:active {
+  @apply transform scale-95;
+}
+
+.payment-method-button:disabled {
+  @apply transform scale-100;
+  @apply opacity-50 cursor-not-allowed;
+}
+
+/* Privacy indicator styling */
+.privacy-indicator {
+  @apply flex items-center space-x-2;
+  @apply p-3 rounded-lg;
+  @apply transition-all duration-300;
+}
+
+.privacy-indicator.public {
+  @apply bg-green-50 dark:bg-green-900/20;
+  @apply border border-green-200 dark:border-green-700;
+}
+
+.privacy-indicator.private {
+  @apply bg-amber-50 dark:bg-amber-900/20;
+  @apply border border-amber-200 dark:border-amber-700;
+}
+
+.privacy-indicator.unlisted {
+  @apply bg-gray-50 dark:bg-gray-700/50;
+  @apply border border-gray-200 dark:border-gray-600;
+}
+
+/* Validation states */
+.field-error {
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+  20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+
+.field-success {
+  @apply border-green-500 bg-green-50 dark:bg-green-900/20;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+/* Loading states */
+.loading-shimmer {
+  @apply bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200;
+  @apply dark:from-gray-700 dark:via-gray-600 dark:to-gray-700;
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Section dividers */
+.section-divider {
+  @apply relative;
+}
+
+.section-divider::before {
+  @apply absolute left-0 right-0 top-0;
+  @apply h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent;
+  @apply dark:via-gray-600;
+  content: '';
+}
+
+/* Conditional field animations */
+.conditional-field {
+  @apply transition-all duration-300 ease-in-out;
+  @apply opacity-0 max-h-0 overflow-hidden;
+}
+
+.conditional-field.show {
+  @apply opacity-100 max-h-96;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  .payment-method-card {
+    @apply space-y-3;
+  }
+
+  .settings-grid {
+    @apply grid-cols-1;
+  }
+
+  .feature-badges {
+    @apply flex-col space-y-2;
+  }
+}
+
+/* Dark mode specific adjustments */
+@media (prefers-color-scheme: dark) {
+  .payment-method-card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Focus indicators for accessibility */
+button:focus {
+  @apply outline-none ring-2 ring-primary-500 ring-offset-2;
+  @apply dark:ring-offset-gray-800;
+}
+
+select:focus {
+  @apply outline-none ring-2 ring-primary-500 ring-offset-2;
+  @apply dark:ring-offset-gray-800;
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+  @apply transition-colors duration-200;
+}

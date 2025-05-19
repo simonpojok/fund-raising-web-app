@@ -25,7 +25,7 @@
         class="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
         [class.border-red-500]="formGroup.get('title')?.invalid && formGroup.get('title')?.touched"
         [class.field-success]="formGroup.get('title')?.valid && formGroup.get('title')?.touched"
-      >
+      />
       <div *ngIf="formGroup.get('title')?.invalid && formGroup.get('title')?.touched" class="mt-1 text-red-500 text-sm field-error">
         <span *ngIf="formGroup.get('title')?.errors?.['required']">Campaign title is required</span>
         <span *ngIf="formGroup.get('title')?.errors?.['minlength']">Title must be at least 5 characters</span>
@@ -84,7 +84,7 @@
             class="block w-full pl-8 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
             [class.border-red-500]="formGroup.get('target_amount')?.invalid && formGroup.get('target_amount')?.touched"
             [class.field-success]="formGroup.get('target_amount')?.valid && formGroup.get('target_amount')?.touched"
-          >
+          />
         </div>
         <div *ngIf="formGroup.get('target_amount')?.invalid && formGroup.get('target_amount')?.touched" class="mt-1 text-red-500 text-sm field-error">
           <span *ngIf="formGroup.get('target_amount')?.errors?.['required']">Target amount is required</span>
@@ -136,7 +136,7 @@
         class="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
         [class.border-red-500]="formGroup.get('end_date')?.invalid && formGroup.get('end_date')?.touched"
         [class.field-success]="formGroup.get('end_date')?.valid && formGroup.get('end_date')?.touched"
-      >
+      />
       <div *ngIf="formGroup.get('end_date')?.invalid && formGroup.get('end_date')?.touched" class="mt-1 text-red-500 text-sm field-error">
         <span *ngIf="formGroup.get('end_date')?.errors?.['required']">End date is required</span>
         <span *ngIf="formGroup.get('end_date')?.errors?.['futureDate']">End date must be in the future</span>
@@ -167,7 +167,7 @@
             type="checkbox"
             formControlName="is_urgent"
             class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500 focus:ring-2 transition-colors"
-          >
+          />
         </div>
         <div class="ml-3">
           <label for="is_urgent" class="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -206,14 +206,14 @@
         </label>
         <div class="file-upload-area border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-lg p-6 text-center hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
           <input
+            #bannerUpload
             type="file"
-            id="banner-upload"
             accept="image/*"
             class="hidden"
             (change)="onBannerChange($event)"
-          >
+          />
 
-          <div *ngIf="!bannerPreview" (click)="document.getElementById('banner-upload')?.click()">
+          <div *ngIf="!bannerPreview" (click)="triggerBannerUpload()">
             <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
               <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
@@ -225,7 +225,7 @@
           </div>
 
           <div *ngIf="bannerPreview" class="relative">
-            <img [src]="bannerPreview" alt="Banner preview" class="max-h-48 mx-auto rounded-lg shadow-sm">
+            <img [src]="bannerPreview" alt="Banner preview" class="max-h-48 mx-auto rounded-lg shadow-sm" />
             <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">{{ getFileSize(selectedBanner!) }}</p>
             <button
               type="button"
@@ -238,7 +238,7 @@
             </button>
             <button
               type="button"
-              (click)="document.getElementById('banner-upload')?.click()"
+              (click)="triggerBannerUpload()"
               class="mt-2 inline-flex items-center px-3 py-1 border border-gray-300 dark:border-gray-600 shadow-sm text-xs font-medium rounded text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
             >
               Change Banner
@@ -254,14 +254,14 @@
         </label>
         <div class="file-upload-area border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-lg p-6 text-center hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
           <input
+            #videoUpload
             type="file"
-            id="video-upload"
             accept="video/*"
             class="hidden"
             (change)="onVideoChange($event)"
-          >
+          />
 
-          <div *ngIf="!videoPreview" (click)="document.getElementById('video-upload')?.click()">
+          <div *ngIf="!videoPreview" (click)="triggerVideoUpload()">
             <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
               <path d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H8.25a.75.75 0 01-.75-.75v-6a.75.75 0 01.75-.75h7.5z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
@@ -286,7 +286,7 @@
             </button>
             <button
               type="button"
-              (click)="document.getElementById('video-upload')?.click()"
+              (click)="triggerVideoUpload()"
               class="mt-2 inline-flex items-center px-3 py-1 border border-gray-300 dark:border-gray-600 shadow-sm text-xs font-medium rounded text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
             >
               Change Video

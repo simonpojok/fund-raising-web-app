@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ISupportCampaignCategory } from '../../interfaces/support_category.interface';
 
@@ -22,6 +22,9 @@ export class BasicInfoCardComponent implements OnInit {
   @Output() videoSelected = new EventEmitter<File>();
   @Output() bannerRemoved = new EventEmitter<void>();
   @Output() videoRemoved = new EventEmitter<void>();
+
+  @ViewChild('bannerUpload') bannerUploadInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('videoUpload') videoUploadInput!: ElementRef<HTMLInputElement>;
 
   minDate: string = '';
   maxDate: string = '';
@@ -66,6 +69,16 @@ export class BasicInfoCardComponent implements OnInit {
 
   removeVideo(): void {
     this.videoRemoved.emit();
+  }
+
+  // Method to trigger banner file input
+  triggerBannerUpload(): void {
+    this.bannerUploadInput.nativeElement.click();
+  }
+
+  // Method to trigger video file input
+  triggerVideoUpload(): void {
+    this.videoUploadInput.nativeElement.click();
   }
 
   // Character count for description

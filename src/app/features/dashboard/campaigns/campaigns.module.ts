@@ -4,10 +4,6 @@ import {RouterModule, Routes} from '@angular/router';
 import {ReactiveFormsModule} from '@angular/forms';
 
 import {SharedModule} from '../../../shared/shared.module';
-import {
-  CreateCampaignComponent
-} from './pages/create-campaign';
-import {CreateCampaignService} from './pages/create-campaign';
 import {authGuard} from '../../../core/guards/auth.guard';
 import {
   BasicInfoCardComponent
@@ -18,6 +14,8 @@ import {
 import {
   SettingsPaymentCardComponent
 } from './pages/create-campaign/components/settings-payment-card/settings-payment-card.component';
+import {CreateCampaignComponent} from './pages/create-campaign/create-campaign.component';
+import {CreateCampaignService} from './pages/create-campaign/services/create-campaign.service';
 
 const routes: Routes = [
   {
